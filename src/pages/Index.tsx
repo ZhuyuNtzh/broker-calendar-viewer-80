@@ -1,20 +1,18 @@
-
 import React, { useState, useMemo } from 'react';
 import CalendarHeader from '@/components/CalendarHeader';
 import WeeklyCalendar from '@/components/WeeklyCalendar';
 import { addWeeks, subWeeks } from 'date-fns';
 import { generateMockTimeSlots } from '@/data/mockData';
-import { Checkbox } from '@/components/ui/checkbox';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
 import { User, Calendar as CalendarIcon } from 'lucide-react';
 
 const Index = () => {
   const [currentDate, setCurrentDate] = useState(new Date());
-  const [showBrokerAgendas, setShowBrokerAgendas] = useState(true);
+  const [selectedProject, setSelectedProject] = useState<string>("ALL");
   const allTimeSlots = generateMockTimeSlots(currentDate);
   
-  // Create a map of project names to broker names
   const projectBrokerMap = useMemo(() => {
     const map = new Map<string, string>();
     allTimeSlots
@@ -25,45 +23,32 @@ const Index = () => {
     return map;
   }, [allTimeSlots]);
   
-  // Extract unique project names for filtering
   const projectNames = useMemo(() => {
     return Array.from(projectBrokerMap.keys());
   }, [projectBrokerMap]);
   
-  // State for filter selections - default all selected
-  const [selectedProjects, setSelectedProjects] = useState<string[]>(projectNames);
-  
-  // Filter time slots based on selected projects and broker visibility settings
   const filteredTimeSlots = useMemo(() => {
     return allTimeSlots.filter(slot => {
-      // For property slots - always include if selected
       if (!slot.isBrokerEvent) {
-        return selectedProjects.includes(slot.projectName);
+        if (selectedProject === "ALL") {
+          return true;
+        }
+        return slot.projectName === selectedProject;
       }
       
-      // For broker events - only show if showBrokerAgendas is true AND broker's property is selected
       if (slot.isBrokerEvent) {
-        if (!showBrokerAgendas) return false;
+        if (selectedProject === "ALL") {
+          return false;
+        }
         
         if (slot.broker) {
-          // Find if any of the selected projects has this broker
-          return selectedProjects.some(projectName => 
-            projectBrokerMap.get(projectName) === slot.broker
-          );
+          return projectBrokerMap.get(selectedProject) === slot.broker;
         }
       }
       
       return false;
     });
-  }, [allTimeSlots, selectedProjects, projectBrokerMap, showBrokerAgendas]);
-
-  const handleProjectFilterChange = (projectName: string, checked: boolean) => {
-    if (checked) {
-      setSelectedProjects(prev => [...prev, projectName]);
-    } else {
-      setSelectedProjects(prev => prev.filter(name => name !== projectName));
-    }
-  };
+  }, [allTimeSlots, selectedProject, projectBrokerMap]);
 
   const handlePreviousWeek = () => {
     setCurrentDate(prev => subWeeks(prev, 1));
@@ -77,14 +62,6 @@ const Index = () => {
     setCurrentDate(new Date());
   };
 
-  const handleSelectAllProjects = () => {
-    setSelectedProjects(projectNames);
-  };
-
-  const handleClearAllProjects = () => {
-    setSelectedProjects([]);
-  };
-
   return (
     <div className="min-h-screen bg-white flex flex-col">
       <div className="container mx-auto px-4 py-6 max-w-screen-2xl">
@@ -96,7 +73,6 @@ const Index = () => {
         />
         
         <div className="flex gap-6 mt-4">
-          {/* Calendar Container */}
           <div className="flex-1 bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden animate-fade-in">
             <WeeklyCalendar 
               currentDate={currentDate} 
@@ -104,60 +80,35 @@ const Index = () => {
             />
           </div>
           
-          {/* Filter Panel */}
           <div className="w-64 bg-white rounded-lg shadow-sm border border-gray-200 p-4 animate-fade-in">
             <div className="flex flex-col">
-              {/* Show Broker Agendas Option */}
-              <div className="mb-5">
+              <h3 className="text-lg font-medium mb-3">Properties</h3>
+              
+              <RadioGroup 
+                value={selectedProject} 
+                onValueChange={setSelectedProject} 
+                className="space-y-3 max-h-[400px] overflow-y-auto pr-2"
+              >
                 <div className="flex items-center space-x-2">
-                  <Checkbox 
-                    id="show-broker-agendas"
-                    checked={showBrokerAgendas}
-                    onCheckedChange={(checked) => setShowBrokerAgendas(checked === true)}
-                  />
+                  <RadioGroupItem value="ALL" id="project-all" />
                   <Label 
-                    htmlFor="show-broker-agendas"
-                    className="text-sm cursor-pointer font-medium flex items-center"
+                    htmlFor="project-all"
+                    className="text-sm cursor-pointer font-medium"
                   >
-                    <CalendarIcon size={14} className="mr-1.5" />
-                    Show Realworks Data
+                    ALL Properties
                   </Label>
                 </div>
-              </div>
-              
-              <Separator className="my-2" />
-              
-              {/* Properties Section */}
-              <h3 className="text-lg font-medium mb-3 mt-3">Properties</h3>
-              
-              {/* Select/Clear All for Properties */}
-              <div className="flex justify-between text-sm mb-3">
-                <button 
-                  onClick={handleSelectAllProjects}
-                  className="text-blue-600 hover:text-blue-800"
-                >
-                  Select All
-                </button>
-                <button 
-                  onClick={handleClearAllProjects}
-                  className="text-gray-600 hover:text-gray-800"
-                >
-                  Clear All
-                </button>
-              </div>
-              
-              <div className="space-y-3 max-h-[400px] overflow-y-auto pr-2">
+                
+                <Separator className="my-2" />
+                
                 {projectNames.map((projectName) => {
                   const brokerName = projectBrokerMap.get(projectName);
                   return (
                     <div key={projectName} className="flex flex-col">
                       <div className="flex items-center space-x-2">
-                        <Checkbox 
-                          id={`project-${projectName}`}
-                          checked={selectedProjects.includes(projectName)}
-                          onCheckedChange={(checked) => 
-                            handleProjectFilterChange(projectName, checked === true)
-                          }
+                        <RadioGroupItem 
+                          value={projectName} 
+                          id={`project-${projectName}`} 
                         />
                         <Label 
                           htmlFor={`project-${projectName}`}
@@ -176,7 +127,17 @@ const Index = () => {
                     </div>
                   );
                 })}
-              </div>
+              </RadioGroup>
+              
+              {selectedProject !== "ALL" && (
+                <div className="mt-4 text-xs text-gray-600 bg-gray-50 p-2 rounded border border-gray-100">
+                  <div className="flex items-center mb-1">
+                    <CalendarIcon size={12} className="mr-1.5" />
+                    <span className="font-medium">Realworks Data</span>
+                  </div>
+                  Showing Realworks calendar data for {projectBrokerMap.get(selectedProject)}
+                </div>
+              )}
             </div>
           </div>
         </div>
