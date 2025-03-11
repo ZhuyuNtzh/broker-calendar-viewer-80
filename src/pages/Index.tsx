@@ -7,10 +7,11 @@ import { generateMockTimeSlots } from '@/data/mockData';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
-import { User } from 'lucide-react';
+import { User, Calendar as CalendarIcon } from 'lucide-react';
 
 const Index = () => {
   const [currentDate, setCurrentDate] = useState(new Date());
+  const [showBrokerAgendas, setShowBrokerAgendas] = useState(true);
   const allTimeSlots = generateMockTimeSlots(currentDate);
   
   // Create a map of project names to broker names
@@ -32,25 +33,29 @@ const Index = () => {
   // State for filter selections - default all selected
   const [selectedProjects, setSelectedProjects] = useState<string[]>(projectNames);
   
-  // Filter time slots based on selected projects and their associated brokers
+  // Filter time slots based on selected projects and broker visibility settings
   const filteredTimeSlots = useMemo(() => {
     return allTimeSlots.filter(slot => {
-      // For property slots
+      // For property slots - always include if selected
       if (!slot.isBrokerEvent) {
         return selectedProjects.includes(slot.projectName);
       }
       
-      // For broker events - show only if the broker's property is selected
-      if (slot.broker) {
-        // Find if any of the selected projects has this broker
-        return selectedProjects.some(projectName => 
-          projectBrokerMap.get(projectName) === slot.broker
-        );
+      // For broker events - only show if showBrokerAgendas is true AND broker's property is selected
+      if (slot.isBrokerEvent) {
+        if (!showBrokerAgendas) return false;
+        
+        if (slot.broker) {
+          // Find if any of the selected projects has this broker
+          return selectedProjects.some(projectName => 
+            projectBrokerMap.get(projectName) === slot.broker
+          );
+        }
       }
       
       return false;
     });
-  }, [allTimeSlots, selectedProjects, projectBrokerMap]);
+  }, [allTimeSlots, selectedProjects, projectBrokerMap, showBrokerAgendas]);
 
   const handleProjectFilterChange = (projectName: string, checked: boolean) => {
     if (checked) {
@@ -102,8 +107,28 @@ const Index = () => {
           {/* Filter Panel */}
           <div className="w-64 bg-white rounded-lg shadow-sm border border-gray-200 p-4 animate-fade-in">
             <div className="flex flex-col">
+              {/* Show Broker Agendas Option */}
+              <div className="mb-5">
+                <div className="flex items-center space-x-2">
+                  <Checkbox 
+                    id="show-broker-agendas"
+                    checked={showBrokerAgendas}
+                    onCheckedChange={(checked) => setShowBrokerAgendas(checked === true)}
+                  />
+                  <Label 
+                    htmlFor="show-broker-agendas"
+                    className="text-sm cursor-pointer font-medium flex items-center"
+                  >
+                    <CalendarIcon size={14} className="mr-1.5" />
+                    Show Realworks Data
+                  </Label>
+                </div>
+              </div>
+              
+              <Separator className="my-2" />
+              
               {/* Properties Section */}
-              <h3 className="text-lg font-medium mb-3">Properties</h3>
+              <h3 className="text-lg font-medium mb-3 mt-3">Properties</h3>
               
               {/* Select/Clear All for Properties */}
               <div className="flex justify-between text-sm mb-3">
