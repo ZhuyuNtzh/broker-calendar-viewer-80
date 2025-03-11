@@ -1,4 +1,3 @@
-
 import { addDays, format, startOfWeek, parse, isToday } from 'date-fns';
 
 export type TimeSlot = {
@@ -11,6 +10,7 @@ export type TimeSlot = {
   isBooked: boolean;
   parties?: number;
   duration?: number; // in minutes
+  broker?: string; // New field for broker name
 };
 
 export const HOURS = Array.from({ length: 15 }, (_, i) => i + 6); // 6am to 8pm

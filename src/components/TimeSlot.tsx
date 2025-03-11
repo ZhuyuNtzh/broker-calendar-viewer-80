@@ -2,7 +2,7 @@
 import React from 'react';
 import { cn } from '@/lib/utils';
 import { formatTime, calculateTimeSlotPosition } from '@/utils/calendarUtils';
-import { Clock, MapPin } from 'lucide-react';
+import { Clock, User } from 'lucide-react';
 import type { TimeSlot as TimeSlotType } from '@/utils/calendarUtils';
 
 interface TimeSlotProps {
@@ -34,10 +34,10 @@ const TimeSlot: React.FC<TimeSlotProps> = ({ slot }) => {
               {formatTime(slot.startTime)} - {formatTime(slot.endTime)}
             </span>
           </div>
-          {slot.location && (
+          {slot.broker && (
             <div className="flex items-center text-xs text-gray-600 mt-1">
-              <MapPin size={12} className="mr-1" />
-              <span className="truncate">{slot.location}</span>
+              <User size={12} className="mr-1" />
+              <span className="truncate">{slot.broker}</span>
             </div>
           )}
         </div>

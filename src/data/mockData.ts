@@ -26,6 +26,18 @@ export const generateMockTimeSlots = (currentDate: Date): TimeSlot[] => {
     'Property Site',
   ];
 
+  // Brokers
+  const brokers = [
+    'Sarah Johnson',
+    'Michael Chen',
+    'Emma Williams',
+    'David Rodriguez',
+    'Jessica Kim',
+    'Robert Taylor',
+    'Lisa Garcia',
+    'John Smith',
+  ];
+
   // Monday slots (day 1)
   mockSlots.push(
     {
@@ -38,6 +50,7 @@ export const generateMockTimeSlots = (currentDate: Date): TimeSlot[] => {
       isBooked: true,
       parties: 2,
       duration: 20,
+      broker: brokers[0],
     },
     {
       id: getUniqueId(),
@@ -49,6 +62,7 @@ export const generateMockTimeSlots = (currentDate: Date): TimeSlot[] => {
       isBooked: false,
       parties: 3,
       duration: 30,
+      broker: brokers[1],
     }
   );
 
@@ -64,6 +78,7 @@ export const generateMockTimeSlots = (currentDate: Date): TimeSlot[] => {
       isBooked: true,
       parties: 1,
       duration: 25,
+      broker: brokers[2],
     },
     {
       id: getUniqueId(),
@@ -75,6 +90,7 @@ export const generateMockTimeSlots = (currentDate: Date): TimeSlot[] => {
       isBooked: false,
       parties: 2,
       duration: 30,
+      broker: brokers[3],
     }
   );
 
@@ -90,6 +106,7 @@ export const generateMockTimeSlots = (currentDate: Date): TimeSlot[] => {
       isBooked: false,
       parties: 2,
       duration: 60,
+      broker: brokers[4],
     }
   );
 
@@ -105,6 +122,7 @@ export const generateMockTimeSlots = (currentDate: Date): TimeSlot[] => {
       isBooked: true,
       parties: 3,
       duration: 40,
+      broker: brokers[5],
     },
     {
       id: getUniqueId(),
@@ -116,6 +134,7 @@ export const generateMockTimeSlots = (currentDate: Date): TimeSlot[] => {
       isBooked: true,
       parties: 4,
       duration: 15,
+      broker: brokers[0],
     }
   );
 
@@ -131,6 +150,7 @@ export const generateMockTimeSlots = (currentDate: Date): TimeSlot[] => {
       isBooked: false,
       parties: 2,
       duration: 30,
+      broker: brokers[6],
     },
     {
       id: getUniqueId(),
@@ -142,6 +162,7 @@ export const generateMockTimeSlots = (currentDate: Date): TimeSlot[] => {
       isBooked: true,
       parties: 1,
       duration: 90,
+      broker: brokers[7],
     }
   );
 
