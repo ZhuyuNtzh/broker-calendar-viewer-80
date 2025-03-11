@@ -32,6 +32,9 @@ const TimeSlot: React.FC<TimeSlotProps> = ({ slot }) => {
   // Calculate left position
   const left = `calc(${(column * 100) / columnCount}% + 2px)`;
   
+  // Check if this slot has multiple parties and time slots
+  const hasBookingSlots = !slot.isBrokerEvent && slot.parties && slot.duration;
+  
   const handleClick = () => {
     setIsOverlayOpen(true);
   };
@@ -41,7 +44,8 @@ const TimeSlot: React.FC<TimeSlotProps> = ({ slot }) => {
       <div
         className={cn(
           'calendar-event animate-scale-in cursor-pointer hover:brightness-95 transition-all',
-          statusClass
+          statusClass,
+          hasBookingSlots && 'has-booking-slots'
         )}
         style={{ 
           top: `${top}px`, 
@@ -75,6 +79,12 @@ const TimeSlot: React.FC<TimeSlotProps> = ({ slot }) => {
               </div>
             )}
           </div>
+          
+          {hasBookingSlots && (
+            <div className="text-xs text-white/90 mt-1">
+              {Math.floor((timeToMinutes(slot.endTime) - timeToMinutes(slot.startTime)) / slot.duration)} time slots
+            </div>
+          )}
         </div>
       </div>
       
@@ -85,6 +95,12 @@ const TimeSlot: React.FC<TimeSlotProps> = ({ slot }) => {
       />
     </>
   );
+};
+
+// Helper function to convert "HH:mm" to minutes since midnight
+const timeToMinutes = (time: string): number => {
+  const [hours, minutes] = time.split(':').map(Number);
+  return hours * 60 + minutes;
 };
 
 export default TimeSlot;
