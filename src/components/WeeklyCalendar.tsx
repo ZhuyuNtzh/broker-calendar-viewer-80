@@ -1,6 +1,6 @@
 
-import React from 'react';
-import { HOURS, TimeSlot, getWeekDays, formatDay, formatDayNumber, checkIsToday } from '@/utils/calendarUtils';
+import React, { useMemo } from 'react';
+import { HOURS, TimeSlot, getWeekDays, formatDay, formatDayNumber, checkIsToday, organizeTimeSlots } from '@/utils/calendarUtils';
 import TimeSlotComponent from './TimeSlot';
 import { cn } from '@/lib/utils';
 
@@ -11,6 +11,11 @@ interface WeeklyCalendarProps {
 
 const WeeklyCalendar: React.FC<WeeklyCalendarProps> = ({ currentDate, timeSlots }) => {
   const weekDays = getWeekDays(currentDate);
+  
+  // Organize time slots to handle overlaps
+  const organizedTimeSlots = useMemo(() => {
+    return organizeTimeSlots(timeSlots);
+  }, [timeSlots]);
   
   return (
     <div className="w-full overflow-hidden">
@@ -64,7 +69,7 @@ const WeeklyCalendar: React.FC<WeeklyCalendarProps> = ({ currentDate, timeSlots 
             ))}
             
             {/* Time slots for this day */}
-            {timeSlots
+            {organizedTimeSlots
               .filter(slot => slot.day === dayIndex + 1) // Our day index is 1-based (Monday=1)
               .map(slot => (
                 <TimeSlotComponent key={slot.id} slot={slot} />

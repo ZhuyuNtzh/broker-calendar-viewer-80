@@ -20,6 +20,16 @@ const TimeSlot: React.FC<TimeSlotProps> = ({ slot }) => {
     statusClass = slot.isBooked ? 'booked' : 'available';
   }
   
+  // Calculate width and left position based on column information
+  const columnCount = slot.columnCount || 1;
+  const column = slot.column || 0;
+  
+  // Calculate width as a percentage (minus small gap)
+  const width = `calc(${100 / columnCount}% - 4px)`;
+  
+  // Calculate left position
+  const left = `calc(${(column * 100) / columnCount}% + 2px)`;
+  
   return (
     <div
       className={cn(
@@ -28,7 +38,10 @@ const TimeSlot: React.FC<TimeSlotProps> = ({ slot }) => {
       )}
       style={{ 
         top: `${top}px`, 
-        height: `${height}px` 
+        height: `${height}px`,
+        width,
+        left,
+        maxWidth: 'calc(100% - 4px)' // Ensure it doesn't overflow the cell
       }}
     >
       <div className="p-2 h-full flex flex-col justify-between overflow-hidden">

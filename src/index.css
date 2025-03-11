@@ -112,11 +112,16 @@
 .calendar-event {
   transition: all 0.2s ease;
   position: absolute;
-  width: calc(100% - 6px);
-  left: 3px;
   border-radius: 6px;
   overflow: hidden;
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  z-index: 1;
+}
+
+.calendar-event:hover {
+  z-index: 2;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15);
+  transform: translateY(-1px) scale(1.01);
 }
 
 .calendar-event.booked {
@@ -125,8 +130,6 @@
 
 .calendar-event.booked:hover {
   background-color: theme('colors.calendar.booked-hover');
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
-  transform: translateY(-1px);
 }
 
 .calendar-event.available {
@@ -135,8 +138,15 @@
 
 .calendar-event.available:hover {
   background-color: theme('colors.calendar.available-hover');
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
-  transform: translateY(-1px);
+}
+
+.calendar-event.broker-event {
+  background-color: #e9d5ff; /* Light purple */
+  border-left: 3px solid #a855f7; /* Medium purple border */
+}
+
+.calendar-event.broker-event:hover {
+  background-color: #e4ccff;
 }
 
 .calendar-fade-enter {
