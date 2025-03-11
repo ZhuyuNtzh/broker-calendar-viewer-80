@@ -1,4 +1,3 @@
-
 import { TimeSlot, getUniqueId } from '../utils/calendarUtils';
 
 // Generate mock data for a week
@@ -38,7 +37,7 @@ export const generateMockTimeSlots = (currentDate: Date): TimeSlot[] => {
     'John Smith',
   ];
 
-  // Monday slots (day 1)
+  // Property time slots (existing slots)
   mockSlots.push(
     {
       id: getUniqueId(),
@@ -163,6 +162,69 @@ export const generateMockTimeSlots = (currentDate: Date): TimeSlot[] => {
       parties: 1,
       duration: 90,
       broker: brokers[7],
+    }
+  );
+
+  // Add broker events (personal calendar items)
+  // Sarah Johnson's events
+  mockSlots.push(
+    {
+      id: getUniqueId(),
+      startTime: '12:00',
+      endTime: '13:00',
+      day: 1, // Monday
+      projectName: 'Lunch with Client',
+      isBooked: true,
+      broker: brokers[0],
+      isBrokerEvent: true,
+    },
+    {
+      id: getUniqueId(),
+      startTime: '16:00',
+      endTime: '17:00',
+      day: 3, // Wednesday
+      projectName: 'Team Meeting',
+      isBooked: true,
+      broker: brokers[0],
+      isBrokerEvent: true,
+    }
+  );
+  
+  // Michael Chen's events
+  mockSlots.push(
+    {
+      id: getUniqueId(),
+      startTime: '09:00',
+      endTime: '10:00',
+      day: 2, // Tuesday
+      projectName: 'Property Inspection',
+      isBooked: true,
+      broker: brokers[1],
+      isBrokerEvent: true,
+    },
+    {
+      id: getUniqueId(),
+      startTime: '14:00',
+      endTime: '15:30',
+      day: 5, // Friday
+      projectName: 'Contract Review',
+      isBooked: true,
+      broker: brokers[1],
+      isBrokerEvent: true,
+    }
+  );
+  
+  // Emma Williams's events
+  mockSlots.push(
+    {
+      id: getUniqueId(),
+      startTime: '13:00',
+      endTime: '14:00',
+      day: 4, // Thursday
+      projectName: 'Client Call',
+      isBooked: true,
+      broker: brokers[2],
+      isBrokerEvent: true,
     }
   );
 

@@ -10,7 +10,8 @@ export type TimeSlot = {
   isBooked: boolean;
   parties?: number;
   duration?: number; // in minutes
-  broker?: string; // New field for broker name
+  broker?: string; // Broker name
+  isBrokerEvent?: boolean; // Flag to identify broker events
 };
 
 export const HOURS = Array.from({ length: 15 }, (_, i) => i + 6); // 6am to 8pm

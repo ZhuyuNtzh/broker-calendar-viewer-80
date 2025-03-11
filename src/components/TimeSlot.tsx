@@ -12,7 +12,13 @@ interface TimeSlotProps {
 const TimeSlot: React.FC<TimeSlotProps> = ({ slot }) => {
   const { top, height } = calculateTimeSlotPosition(slot.startTime, slot.endTime);
   
-  const statusClass = slot.isBooked ? 'booked' : 'available';
+  // Determine status class
+  let statusClass = '';
+  if (slot.isBrokerEvent) {
+    statusClass = 'broker-event';
+  } else {
+    statusClass = slot.isBooked ? 'booked' : 'available';
+  }
   
   return (
     <div
@@ -43,7 +49,7 @@ const TimeSlot: React.FC<TimeSlotProps> = ({ slot }) => {
         </div>
         
         <div className="mt-1 text-xs">
-          {slot.parties && slot.duration && (
+          {!slot.isBrokerEvent && slot.parties && slot.duration && (
             <div className="flex flex-wrap gap-1 mt-1">
               <span className="calendar-slot-pill">
                 {slot.parties} {slot.parties === 1 ? 'party' : 'parties'}

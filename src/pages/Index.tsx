@@ -6,6 +6,7 @@ import { addWeeks, subWeeks } from 'date-fns';
 import { generateMockTimeSlots } from '@/data/mockData';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
+import { Separator } from '@/components/ui/separator';
 
 const Index = () => {
   const [currentDate, setCurrentDate] = useState(new Date());
@@ -13,23 +14,55 @@ const Index = () => {
   
   // Extract unique project names for filtering
   const projectNames = useMemo(() => {
-    const uniqueProjects = new Set(allTimeSlots.map(slot => slot.projectName));
+    const uniqueProjects = new Set(
+      allTimeSlots
+        .filter(slot => !slot.isBrokerEvent)
+        .map(slot => slot.projectName)
+    );
     return Array.from(uniqueProjects);
+  }, [allTimeSlots]);
+  
+  // Extract unique broker names for filtering
+  const brokerNames = useMemo(() => {
+    const uniqueBrokers = new Set(
+      allTimeSlots
+        .filter(slot => slot.broker)
+        .map(slot => slot.broker!)
+    );
+    return Array.from(uniqueBrokers);
   }, [allTimeSlots]);
   
   // State for filter selections - default all selected
   const [selectedProjects, setSelectedProjects] = useState<string[]>(projectNames);
+  const [selectedBrokers, setSelectedBrokers] = useState<string[]>(brokerNames);
+  const [showBrokerEvents, setShowBrokerEvents] = useState(true);
   
-  // Filter time slots based on selected projects
+  // Filter time slots based on selected projects and brokers
   const filteredTimeSlots = useMemo(() => {
-    return allTimeSlots.filter(slot => selectedProjects.includes(slot.projectName));
-  }, [allTimeSlots, selectedProjects]);
+    return allTimeSlots.filter(slot => {
+      // For property slots
+      if (!slot.isBrokerEvent) {
+        return selectedProjects.includes(slot.projectName);
+      }
+      
+      // For broker events
+      return showBrokerEvents && slot.broker && selectedBrokers.includes(slot.broker);
+    });
+  }, [allTimeSlots, selectedProjects, selectedBrokers, showBrokerEvents]);
 
   const handleProjectFilterChange = (projectName: string, checked: boolean) => {
     if (checked) {
       setSelectedProjects(prev => [...prev, projectName]);
     } else {
       setSelectedProjects(prev => prev.filter(name => name !== projectName));
+    }
+  };
+
+  const handleBrokerFilterChange = (brokerName: string, checked: boolean) => {
+    if (checked) {
+      setSelectedBrokers(prev => [...prev, brokerName]);
+    } else {
+      setSelectedBrokers(prev => prev.filter(name => name !== brokerName));
     }
   };
 
@@ -45,12 +78,20 @@ const Index = () => {
     setCurrentDate(new Date());
   };
 
-  const handleSelectAll = () => {
+  const handleSelectAllProjects = () => {
     setSelectedProjects(projectNames);
   };
 
-  const handleClearAll = () => {
+  const handleClearAllProjects = () => {
     setSelectedProjects([]);
+  };
+
+  const handleSelectAllBrokers = () => {
+    setSelectedBrokers(brokerNames);
+  };
+
+  const handleClearAllBrokers = () => {
+    setSelectedBrokers([]);
   };
 
   return (
@@ -72,28 +113,29 @@ const Index = () => {
             />
           </div>
           
-          {/* Property Filter Panel */}
+          {/* Filter Panel */}
           <div className="w-64 bg-white rounded-lg shadow-sm border border-gray-200 p-4 animate-fade-in">
             <div className="flex flex-col">
+              {/* Properties Section */}
               <h3 className="text-lg font-medium mb-3">Properties</h3>
               
-              {/* Select/Clear All */}
+              {/* Select/Clear All for Properties */}
               <div className="flex justify-between text-sm mb-3">
                 <button 
-                  onClick={handleSelectAll}
+                  onClick={handleSelectAllProjects}
                   className="text-blue-600 hover:text-blue-800"
                 >
                   Select All
                 </button>
                 <button 
-                  onClick={handleClearAll}
+                  onClick={handleClearAllProjects}
                   className="text-gray-600 hover:text-gray-800"
                 >
                   Clear All
                 </button>
               </div>
               
-              <div className="space-y-2 max-h-[calc(100vh-250px)] overflow-y-auto pr-2">
+              <div className="space-y-2 max-h-[200px] overflow-y-auto pr-2">
                 {projectNames.map((projectName) => (
                   <div key={projectName} className="flex items-center space-x-2">
                     <Checkbox 
@@ -108,6 +150,62 @@ const Index = () => {
                       className="text-sm cursor-pointer"
                     >
                       {projectName}
+                    </Label>
+                  </div>
+                ))}
+              </div>
+              
+              <Separator className="my-4" />
+              
+              {/* Brokers Section */}
+              <div className="flex justify-between items-center mb-3">
+                <h3 className="text-lg font-medium">Brokers</h3>
+                <div className="flex items-center">
+                  <Checkbox 
+                    id="show-broker-events"
+                    checked={showBrokerEvents}
+                    onCheckedChange={(checked) => setShowBrokerEvents(checked === true)}
+                  />
+                  <Label 
+                    htmlFor="show-broker-events"
+                    className="text-xs ml-2 cursor-pointer"
+                  >
+                    Show events
+                  </Label>
+                </div>
+              </div>
+              
+              {/* Select/Clear All for Brokers */}
+              <div className="flex justify-between text-sm mb-3">
+                <button 
+                  onClick={handleSelectAllBrokers}
+                  className="text-blue-600 hover:text-blue-800"
+                >
+                  Select All
+                </button>
+                <button 
+                  onClick={handleClearAllBrokers}
+                  className="text-gray-600 hover:text-gray-800"
+                >
+                  Clear All
+                </button>
+              </div>
+              
+              <div className="space-y-2 max-h-[200px] overflow-y-auto pr-2">
+                {brokerNames.map((brokerName) => (
+                  <div key={brokerName} className="flex items-center space-x-2">
+                    <Checkbox 
+                      id={`broker-${brokerName}`}
+                      checked={selectedBrokers.includes(brokerName)}
+                      onCheckedChange={(checked) => 
+                        handleBrokerFilterChange(brokerName, checked === true)
+                      }
+                    />
+                    <Label 
+                      htmlFor={`broker-${brokerName}`}
+                      className="text-sm cursor-pointer"
+                    >
+                      {brokerName}
                     </Label>
                   </div>
                 ))}
