@@ -134,12 +134,12 @@
 }
 
 .calendar-event.available {
-  background-color: #2563eb; /* Medium blue */
+  background-color: #1e40af; /* Same dark blue as booked */
   color: white;
 }
 
 .calendar-event.available:hover {
-  background-color: #1d4ed8; /* Slightly darker blue on hover */
+  background-color: #1e3a8a; /* Same hover color as booked */
 }
 
 .calendar-event.broker-event {

@@ -1,4 +1,3 @@
-
 import type { Config } from "tailwindcss";
 
 export default {
@@ -66,8 +65,8 @@ export default {
         calendar: {
           booked: '#1e40af', /* Dark blue */
           'booked-hover': '#1e3a8a', /* Slightly darker blue on hover */
-          available: '#2563eb', /* Medium blue */
-          'available-hover': '#1d4ed8', /* Slightly darker blue on hover */
+          available: '#1e40af', /* Same dark blue as booked */
+          'available-hover': '#1e3a8a', /* Same hover color as booked */
           'broker-event': '#f3e8ff', /* Light purple */
           'broker-event-hover': '#ede9fe', /* Slightly different light purple on hover */
           'today-highlight': 'rgba(59, 130, 246, 0.1)',
