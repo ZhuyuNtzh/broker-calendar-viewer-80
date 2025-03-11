@@ -2,7 +2,7 @@
 import React from 'react';
 import { cn } from '@/lib/utils';
 import { formatTime, calculateTimeSlotPosition } from '@/utils/calendarUtils';
-import { Clock, User } from 'lucide-react';
+import { User } from 'lucide-react';
 import type { TimeSlot as TimeSlotType } from '@/utils/calendarUtils';
 
 interface TimeSlotProps {
@@ -52,13 +52,10 @@ const TimeSlot: React.FC<TimeSlotProps> = ({ slot }) => {
             {slot.projectName}
           </h4>
           <div className={cn(
-            "flex items-center text-xs mt-1",
+            "text-xs mt-1",
             slot.isBrokerEvent ? "text-gray-600" : "text-white/90"
           )}>
-            <Clock size={12} className="mr-1" />
-            <span>
-              {formatTime(slot.startTime)} - {formatTime(slot.endTime)}
-            </span>
+            {formatTime(slot.startTime)} - {formatTime(slot.endTime)}
           </div>
           {slot.broker && (
             <div className={cn(
@@ -67,19 +64,6 @@ const TimeSlot: React.FC<TimeSlotProps> = ({ slot }) => {
             )}>
               <User size={12} className="mr-1" />
               <span className="truncate">{slot.broker}</span>
-            </div>
-          )}
-        </div>
-        
-        <div className="mt-1 text-xs">
-          {!slot.isBrokerEvent && slot.parties && slot.duration && (
-            <div className="flex flex-wrap gap-1 mt-1">
-              <span className="calendar-slot-pill">
-                {slot.parties} {slot.parties === 1 ? 'party' : 'parties'}
-              </span>
-              <span className="calendar-slot-pill">
-                {slot.duration} min each
-              </span>
             </div>
           )}
         </div>
