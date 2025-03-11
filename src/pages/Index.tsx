@@ -1,3 +1,4 @@
+
 import React, { useState, useMemo } from 'react';
 import CalendarHeader from '@/components/CalendarHeader';
 import WeeklyCalendar from '@/components/WeeklyCalendar';
@@ -29,21 +30,20 @@ const Index = () => {
   
   const filteredTimeSlots = useMemo(() => {
     return allTimeSlots.filter(slot => {
+      if (selectedProject === "ALL") {
+        // Show only property events, no broker events
+        return !slot.isBrokerEvent;
+      }
+      
+      // For specific property, show both property events for that property
+      // and the related broker's personal events
       if (!slot.isBrokerEvent) {
-        if (selectedProject === "ALL") {
-          return true;
-        }
         return slot.projectName === selectedProject;
       }
       
-      if (slot.isBrokerEvent) {
-        if (selectedProject === "ALL") {
-          return false;
-        }
-        
-        if (slot.broker) {
-          return projectBrokerMap.get(selectedProject) === slot.broker;
-        }
+      // Show broker events if they match the selected property's broker
+      if (slot.isBrokerEvent && slot.broker) {
+        return projectBrokerMap.get(selectedProject) === slot.broker;
       }
       
       return false;
