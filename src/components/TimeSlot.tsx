@@ -1,11 +1,12 @@
 
 import React from 'react';
 import { cn } from '@/lib/utils';
-import { formatTime, TimeSlot, calculateTimeSlotPosition } from '@/utils/calendarUtils';
+import { formatTime, calculateTimeSlotPosition } from '@/utils/calendarUtils';
 import { Clock, MapPin } from 'lucide-react';
+import type { TimeSlot as TimeSlotType } from '@/utils/calendarUtils';
 
 interface TimeSlotProps {
-  slot: TimeSlot;
+  slot: TimeSlotType;
 }
 
 const TimeSlot: React.FC<TimeSlotProps> = ({ slot }) => {
