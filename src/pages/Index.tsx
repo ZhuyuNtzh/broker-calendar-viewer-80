@@ -7,37 +7,32 @@ import { generateMockTimeSlots } from '@/data/mockData';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
+import { User } from 'lucide-react';
 
 const Index = () => {
   const [currentDate, setCurrentDate] = useState(new Date());
   const allTimeSlots = generateMockTimeSlots(currentDate);
   
-  // Extract unique project names for filtering
-  const projectNames = useMemo(() => {
-    const uniqueProjects = new Set(
-      allTimeSlots
-        .filter(slot => !slot.isBrokerEvent)
-        .map(slot => slot.projectName)
-    );
-    return Array.from(uniqueProjects);
+  // Create a map of project names to broker names
+  const projectBrokerMap = useMemo(() => {
+    const map = new Map<string, string>();
+    allTimeSlots
+      .filter(slot => !slot.isBrokerEvent && slot.broker)
+      .forEach(slot => {
+        map.set(slot.projectName, slot.broker!);
+      });
+    return map;
   }, [allTimeSlots]);
   
-  // Extract unique broker names for filtering
-  const brokerNames = useMemo(() => {
-    const uniqueBrokers = new Set(
-      allTimeSlots
-        .filter(slot => slot.broker)
-        .map(slot => slot.broker!)
-    );
-    return Array.from(uniqueBrokers);
-  }, [allTimeSlots]);
+  // Extract unique project names for filtering
+  const projectNames = useMemo(() => {
+    return Array.from(projectBrokerMap.keys());
+  }, [projectBrokerMap]);
   
   // State for filter selections - default all selected
   const [selectedProjects, setSelectedProjects] = useState<string[]>(projectNames);
-  const [selectedBrokers, setSelectedBrokers] = useState<string[]>(brokerNames);
-  const [showBrokerEvents, setShowBrokerEvents] = useState(true);
   
-  // Filter time slots based on selected projects and brokers
+  // Filter time slots based on selected projects and their associated brokers
   const filteredTimeSlots = useMemo(() => {
     return allTimeSlots.filter(slot => {
       // For property slots
@@ -45,24 +40,23 @@ const Index = () => {
         return selectedProjects.includes(slot.projectName);
       }
       
-      // For broker events
-      return showBrokerEvents && slot.broker && selectedBrokers.includes(slot.broker);
+      // For broker events - show only if the broker's property is selected
+      if (slot.broker) {
+        // Find if any of the selected projects has this broker
+        return selectedProjects.some(projectName => 
+          projectBrokerMap.get(projectName) === slot.broker
+        );
+      }
+      
+      return false;
     });
-  }, [allTimeSlots, selectedProjects, selectedBrokers, showBrokerEvents]);
+  }, [allTimeSlots, selectedProjects, projectBrokerMap]);
 
   const handleProjectFilterChange = (projectName: string, checked: boolean) => {
     if (checked) {
       setSelectedProjects(prev => [...prev, projectName]);
     } else {
       setSelectedProjects(prev => prev.filter(name => name !== projectName));
-    }
-  };
-
-  const handleBrokerFilterChange = (brokerName: string, checked: boolean) => {
-    if (checked) {
-      setSelectedBrokers(prev => [...prev, brokerName]);
-    } else {
-      setSelectedBrokers(prev => prev.filter(name => name !== brokerName));
     }
   };
 
@@ -84,14 +78,6 @@ const Index = () => {
 
   const handleClearAllProjects = () => {
     setSelectedProjects([]);
-  };
-
-  const handleSelectAllBrokers = () => {
-    setSelectedBrokers(brokerNames);
-  };
-
-  const handleClearAllBrokers = () => {
-    setSelectedBrokers([]);
   };
 
   return (
@@ -135,80 +121,36 @@ const Index = () => {
                 </button>
               </div>
               
-              <div className="space-y-2 max-h-[200px] overflow-y-auto pr-2">
-                {projectNames.map((projectName) => (
-                  <div key={projectName} className="flex items-center space-x-2">
-                    <Checkbox 
-                      id={`project-${projectName}`}
-                      checked={selectedProjects.includes(projectName)}
-                      onCheckedChange={(checked) => 
-                        handleProjectFilterChange(projectName, checked === true)
-                      }
-                    />
-                    <Label 
-                      htmlFor={`project-${projectName}`}
-                      className="text-sm cursor-pointer"
-                    >
-                      {projectName}
-                    </Label>
-                  </div>
-                ))}
-              </div>
-              
-              <Separator className="my-4" />
-              
-              {/* Brokers Section */}
-              <div className="flex justify-between items-center mb-3">
-                <h3 className="text-lg font-medium">Brokers</h3>
-                <div className="flex items-center">
-                  <Checkbox 
-                    id="show-broker-events"
-                    checked={showBrokerEvents}
-                    onCheckedChange={(checked) => setShowBrokerEvents(checked === true)}
-                  />
-                  <Label 
-                    htmlFor="show-broker-events"
-                    className="text-xs ml-2 cursor-pointer"
-                  >
-                    Show events
-                  </Label>
-                </div>
-              </div>
-              
-              {/* Select/Clear All for Brokers */}
-              <div className="flex justify-between text-sm mb-3">
-                <button 
-                  onClick={handleSelectAllBrokers}
-                  className="text-blue-600 hover:text-blue-800"
-                >
-                  Select All
-                </button>
-                <button 
-                  onClick={handleClearAllBrokers}
-                  className="text-gray-600 hover:text-gray-800"
-                >
-                  Clear All
-                </button>
-              </div>
-              
-              <div className="space-y-2 max-h-[200px] overflow-y-auto pr-2">
-                {brokerNames.map((brokerName) => (
-                  <div key={brokerName} className="flex items-center space-x-2">
-                    <Checkbox 
-                      id={`broker-${brokerName}`}
-                      checked={selectedBrokers.includes(brokerName)}
-                      onCheckedChange={(checked) => 
-                        handleBrokerFilterChange(brokerName, checked === true)
-                      }
-                    />
-                    <Label 
-                      htmlFor={`broker-${brokerName}`}
-                      className="text-sm cursor-pointer"
-                    >
-                      {brokerName}
-                    </Label>
-                  </div>
-                ))}
+              <div className="space-y-3 max-h-[400px] overflow-y-auto pr-2">
+                {projectNames.map((projectName) => {
+                  const brokerName = projectBrokerMap.get(projectName);
+                  return (
+                    <div key={projectName} className="flex flex-col">
+                      <div className="flex items-center space-x-2">
+                        <Checkbox 
+                          id={`project-${projectName}`}
+                          checked={selectedProjects.includes(projectName)}
+                          onCheckedChange={(checked) => 
+                            handleProjectFilterChange(projectName, checked === true)
+                          }
+                        />
+                        <Label 
+                          htmlFor={`project-${projectName}`}
+                          className="text-sm cursor-pointer font-medium"
+                        >
+                          {projectName}
+                        </Label>
+                      </div>
+                      
+                      {brokerName && (
+                        <div className="ml-6 mt-1 flex items-center text-xs text-gray-600">
+                          <User size={12} className="mr-1" />
+                          <span>{brokerName}</span>
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
               </div>
             </div>
           </div>
