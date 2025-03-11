@@ -46,15 +46,25 @@ const TimeSlot: React.FC<TimeSlotProps> = ({ slot }) => {
     >
       <div className="p-2 h-full flex flex-col justify-between overflow-hidden">
         <div>
-          <h4 className="font-medium text-sm truncate">{slot.projectName}</h4>
-          <div className="flex items-center text-xs text-gray-600 mt-1">
+          <h4 className={cn(
+            "font-medium text-sm truncate",
+          )}>
+            {slot.projectName}
+          </h4>
+          <div className={cn(
+            "flex items-center text-xs mt-1",
+            slot.isBrokerEvent ? "text-gray-600" : "text-white/90"
+          )}>
             <Clock size={12} className="mr-1" />
             <span>
               {formatTime(slot.startTime)} - {formatTime(slot.endTime)}
             </span>
           </div>
           {slot.broker && (
-            <div className="flex items-center text-xs text-gray-600 mt-1">
+            <div className={cn(
+              "flex items-center text-xs mt-1",
+              slot.isBrokerEvent ? "text-gray-600" : "text-white/90"
+            )}>
               <User size={12} className="mr-1" />
               <span className="truncate">{slot.broker}</span>
             </div>

@@ -125,28 +125,31 @@
 }
 
 .calendar-event.booked {
-  background-color: theme('colors.calendar.booked');
+  background-color: #1e40af; /* Dark blue */
+  color: white;
 }
 
 .calendar-event.booked:hover {
-  background-color: theme('colors.calendar.booked-hover');
+  background-color: #1e3a8a; /* Slightly darker blue on hover */
 }
 
 .calendar-event.available {
-  background-color: theme('colors.calendar.available');
+  background-color: #2563eb; /* Medium blue */
+  color: white;
 }
 
 .calendar-event.available:hover {
-  background-color: theme('colors.calendar.available-hover');
+  background-color: #1d4ed8; /* Slightly darker blue on hover */
 }
 
 .calendar-event.broker-event {
-  background-color: #e9d5ff; /* Light purple */
+  background-color: #f3e8ff; /* Light purple */
   border-left: 3px solid #a855f7; /* Medium purple border */
+  color: #4b5563; /* Gray text for contrast */
 }
 
 .calendar-event.broker-event:hover {
-  background-color: #e4ccff;
+  background-color: #ede9fe; /* Slightly different light purple on hover */
 }
 
 .calendar-fade-enter {
@@ -175,7 +178,7 @@
   border-radius: 10px;
   font-weight: 500;
   display: inline-block;
-  background-color: rgba(255, 255, 255, 0.5);
+  background-color: rgba(255, 255, 255, 0.3);
   margin-right: 4px;
 }
 

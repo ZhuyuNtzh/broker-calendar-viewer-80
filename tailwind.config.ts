@@ -64,10 +64,12 @@ export default {
 					ring: 'hsl(var(--sidebar-ring))'
 				},
         calendar: {
-          booked: 'rgba(252, 231, 231, 1)',
-          'booked-hover': 'rgba(250, 219, 219, 1)',
-          available: 'rgba(231, 245, 252, 0.7)',
-          'available-hover': 'rgba(215, 237, 248, 0.8)',
+          booked: '#1e40af', /* Dark blue */
+          'booked-hover': '#1e3a8a', /* Slightly darker blue on hover */
+          available: '#2563eb', /* Medium blue */
+          'available-hover': '#1d4ed8', /* Slightly darker blue on hover */
+          'broker-event': '#f3e8ff', /* Light purple */
+          'broker-event-hover': '#ede9fe', /* Slightly different light purple on hover */
           'today-highlight': 'rgba(59, 130, 246, 0.1)',
         }
 			},
