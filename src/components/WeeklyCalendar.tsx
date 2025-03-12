@@ -9,12 +9,14 @@ interface WeeklyCalendarProps {
   currentDate: Date;
   timeSlots: TimeSlot[];
   projectNames?: string[];
+  selectedProject?: string;
 }
 
 const WeeklyCalendar: React.FC<WeeklyCalendarProps> = ({ 
   currentDate, 
   timeSlots,
-  projectNames = [] 
+  projectNames = [],
+  selectedProject = "ALL"
 }) => {
   const weekDays = getWeekDays(currentDate);
   const [bookingDialogInfo, setBookingDialogInfo] = useState<{
@@ -133,6 +135,7 @@ const WeeklyCalendar: React.FC<WeeklyCalendarProps> = ({
         startTime={bookingDialogInfo.startTime}
         endTime={bookingDialogInfo.endTime}
         projectNames={projectNames}
+        selectedProject={selectedProject}
       />
     </div>
   );

@@ -1,3 +1,4 @@
+
 import React, { useState, useMemo } from 'react';
 import CalendarHeader from '@/components/CalendarHeader';
 import WeeklyCalendar from '@/components/WeeklyCalendar';
@@ -97,6 +98,7 @@ const Index = () => {
               currentDate={currentDate} 
               timeSlots={filteredTimeSlots}
               projectNames={projectNames}
+              selectedProject={selectedProject}
             />
           </div>
           

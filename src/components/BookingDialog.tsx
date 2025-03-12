@@ -13,6 +13,7 @@ interface BookingDialogProps {
   startTime: string;
   endTime: string;
   projectNames: string[];
+  selectedProject?: string;
 }
 
 const BookingDialog: React.FC<BookingDialogProps> = ({
@@ -22,6 +23,7 @@ const BookingDialog: React.FC<BookingDialogProps> = ({
   startTime,
   endTime,
   projectNames,
+  selectedProject = "ALL",
 }) => {
   const handleSubmit = (data: any) => {
     // This would actually create the booking in a real app
@@ -39,6 +41,7 @@ const BookingDialog: React.FC<BookingDialogProps> = ({
           projectNames={projectNames}
           onClose={onClose}
           onSubmit={handleSubmit}
+          selectedProject={selectedProject !== "ALL" ? selectedProject : ""}
         />
       </DialogContent>
     </Dialog>

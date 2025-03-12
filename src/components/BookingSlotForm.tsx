@@ -12,6 +12,7 @@ interface BookingSlotFormProps {
   initialStartTime: string;
   initialEndTime: string;
   projectNames: string[];
+  selectedProject?: string;
   onClose: () => void;
   onSubmit: (data: {
     projectName: string;
@@ -40,11 +41,12 @@ const BookingSlotForm: React.FC<BookingSlotFormProps> = ({
   initialStartTime,
   initialEndTime,
   projectNames,
+  selectedProject = "",
   onClose,
   onSubmit
 }) => {
   const [formData, setFormData] = React.useState({
-    projectName: '',
+    projectName: selectedProject,
     startTime: initialStartTime,
     endTime: initialEndTime,
     firstName: '',
