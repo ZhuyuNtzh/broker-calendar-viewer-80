@@ -1,4 +1,3 @@
-
 import React, { useState, useMemo } from 'react';
 import CalendarHeader from '@/components/CalendarHeader';
 import WeeklyCalendar from '@/components/WeeklyCalendar';
@@ -118,7 +117,7 @@ const Index = () => {
             />
           </div>
           
-          <div className="w-64 bg-white rounded-lg shadow-sm border border-gray-200 p-4 animate-fade-in">
+          <div className="w-64 bg-white rounded-lg border border-gray-200 p-4 animate-fade-in">
             <div className="flex flex-col">
               <h3 className="text-lg font-medium mb-3">Properties</h3>
               
