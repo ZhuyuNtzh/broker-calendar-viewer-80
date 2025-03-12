@@ -29,7 +29,10 @@ const TimeSlot: React.FC<TimeSlotProps> = ({ slot }) => {
   const left = `calc(${(column * 100) / columnCount}% + 2px)`; // Add a bit of margin
   
   const handleClick = () => {
-    setIsOverlayOpen(true);
+    // Only open overlay for non-broker events
+    if (!slot.isBrokerEvent) {
+      setIsOverlayOpen(true);
+    }
   };
   
   // Determine border style for broker events
@@ -46,8 +49,8 @@ const TimeSlot: React.FC<TimeSlotProps> = ({ slot }) => {
     <>
       <div
         className={cn(
-          'calendar-event absolute animate-scale-in cursor-pointer hover:brightness-95 transition-all',
-          slot.isCrossWeek && 'cross-week-event'
+          'calendar-event absolute animate-scale-in transition-all',
+          slot.isBrokerEvent ? 'hover:brightness-100' : 'cursor-pointer hover:brightness-95'
         )}
         style={{ 
           top: `${top}px`, 
@@ -74,11 +77,13 @@ const TimeSlot: React.FC<TimeSlotProps> = ({ slot }) => {
         </div>
       </div>
       
-      <TimeSlotOverlay 
-        slot={slot}
-        isOpen={isOverlayOpen}
-        onClose={() => setIsOverlayOpen(false)}
-      />
+      {!slot.isBrokerEvent && (
+        <TimeSlotOverlay 
+          slot={slot}
+          isOpen={isOverlayOpen}
+          onClose={() => setIsOverlayOpen(false)}
+        />
+      )}
     </>
   );
 };

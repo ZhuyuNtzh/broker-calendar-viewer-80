@@ -1,10 +1,12 @@
 
 import React from 'react';
-import { X } from 'lucide-react';
+import { X, User, MapPin, Clock, ArrowRight, Video, Users, Calendar } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { formatTime } from '@/utils/calendarUtils';
 import { Separator } from '@/components/ui/separator';
 import type { TimeSlot } from '@/utils/calendarUtils';
+import { Button } from '@/components/ui/button';
+import { format, parse } from 'date-fns';
 
 interface TimeSlotOverlayProps {
   slot: TimeSlot | null;
@@ -49,64 +51,95 @@ const TimeSlotOverlay: React.FC<TimeSlotOverlayProps> = ({ slot, isOpen, onClose
     }
   }
 
+  // Get today's date or mock date for display
+  const today = new Date();
+  const mockDate = today;
+
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
       <DialogContent className="sm:max-w-md animate-scale-in">
-        <DialogHeader>
-          <DialogTitle className="text-xl font-semibold">{slot.projectName}</DialogTitle>
-          <button 
-            className="absolute top-4 right-4 rounded-full p-1.5 hover:bg-gray-100 transition-colors"
-            onClick={onClose}
-          >
-            <X className="h-4 w-4" />
-          </button>
+        <DialogHeader className="pb-2">
+          <div className="flex items-center justify-between mb-2">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center">
+                <Calendar className="h-5 w-5 text-gray-600" />
+              </div>
+              <DialogTitle className="text-xl font-semibold m-0">{slot.projectName}</DialogTitle>
+            </div>
+            <button 
+              className="rounded-full p-1.5 hover:bg-gray-100 transition-colors"
+              onClick={onClose}
+            >
+              <X className="h-5 w-5" />
+            </button>
+          </div>
+          <p className="text-gray-500 text-sm ml-[52px]">
+            {slot.location || "No description provided"}
+          </p>
         </DialogHeader>
         
-        <div className="space-y-4 pt-2">
-          <div className="space-y-2">
-            <div className="font-medium text-gray-700">Time</div>
-            <div>{formatTime(slot.startTime)} - {formatTime(slot.endTime)}</div>
+        <div className="space-y-5 pt-2">
+          {/* Time & Date Section */}
+          <div className="flex items-center gap-6 ml-[52px]">
+            <div className="flex items-center">
+              <Clock className="h-5 w-5 text-gray-500 mr-2" />
+              <div className="text-sm">
+                <span className="font-medium">{formatTime(slot.startTime)}</span>
+                <ArrowRight className="inline-block h-3 w-3 mx-1" />
+                <span className="font-medium">{formatTime(slot.endTime)}</span>
+              </div>
+            </div>
+            
+            <div className="flex items-center">
+              <Calendar className="h-5 w-5 text-gray-500 mr-2" />
+              <div className="text-sm font-medium">
+                {format(mockDate, 'dd MMM yyyy')}
+              </div>
+            </div>
           </div>
           
-          {slot.broker && (
-            <div className="space-y-2">
-              <div className="font-medium text-gray-700">Broker</div>
-              <div>{slot.broker}</div>
+          {/* Location Section */}
+          {slot.location && (
+            <div className="flex items-center ml-[52px]">
+              <MapPin className="h-5 w-5 text-gray-500 mr-2" />
+              <div className="text-sm font-medium">{slot.location}</div>
             </div>
           )}
           
+          {/* Video Call Option */}
+          <div className="flex items-center ml-[52px]">
+            <Video className="h-5 w-5 text-gray-500 mr-2" />
+            <div className="text-sm font-medium text-blue-600">Google Meet</div>
+          </div>
+          
           <Separator />
           
+          {/* Guests Section */}
           <div className="space-y-2">
-            <div className="font-medium text-gray-700">Meta Information</div>
-            <div className="space-y-1 text-sm">
-              {slot.parties && (
-                <div className="flex justify-between">
-                  <span className="text-gray-600">Simultaneous parties:</span>
-                  <span>{slot.parties}</span>
-                </div>
-              )}
-              {slot.duration && (
-                <div className="flex justify-between">
-                  <span className="text-gray-600">Minutes per slot:</span>
-                  <span>{slot.duration}</span>
-                </div>
-              )}
-              {slot.location && (
-                <div className="flex justify-between">
-                  <span className="text-gray-600">Location:</span>
-                  <span>{slot.location}</span>
-                </div>
-              )}
+            <div className="flex items-center mb-3">
+              <Users className="h-5 w-5 text-gray-500 mr-2" />
+              <div className="font-medium">Guests</div>
+            </div>
+            
+            <div className="flex gap-2 ml-7">
+              <div className="h-8 w-8 rounded-full bg-purple-400 flex items-center justify-center text-white">
+                J
+              </div>
+              <div className="h-8 w-8 rounded-full bg-gray-200 flex items-center justify-center text-gray-500">
+                T
+              </div>
+              <div className="text-sm ml-2 flex flex-col justify-center">
+                <span>1 going, 1 awaiting</span>
+              </div>
             </div>
           </div>
           
           {timeSlots.length > 0 && (
             <>
               <Separator />
-              <div className="space-y-2">
-                <div className="font-medium text-gray-700">Time Slots</div>
-                <div className="space-y-2 max-h-60 overflow-y-auto pr-1">
+              <div className="space-y-3">
+                <div className="font-medium">Time Slots</div>
+                <div className="space-y-2 max-h-60 overflow-y-auto pr-1 ml-2">
                   {timeSlots.map((timeSlot, index) => (
                     <div key={index} className="p-2 bg-gray-50 rounded-md">
                       <div className="font-medium text-sm">
@@ -125,6 +158,13 @@ const TimeSlotOverlay: React.FC<TimeSlotOverlayProps> = ({ slot, isOpen, onClose
               </div>
             </>
           )}
+          
+          {/* Action Button */}
+          <div className="flex justify-end pt-2">
+            <Button className="bg-green-500 hover:bg-green-600">
+              Send event
+            </Button>
+          </div>
         </div>
       </DialogContent>
     </Dialog>
