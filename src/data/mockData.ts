@@ -1,4 +1,3 @@
-
 import { TimeSlot, getUniqueId } from '../utils/calendarUtils';
 
 // Generate mock data for a week
@@ -63,6 +62,43 @@ export const generateMockTimeSlots = (currentDate: Date): TimeSlot[] => {
       parties: 3,
       duration: 30,
       broker: brokers[1],
+    },
+    // Adding overlapping slots for Monday
+    {
+      id: getUniqueId(),
+      startTime: '09:30',
+      endTime: '10:30',
+      day: 1, // Monday - overlaps with Oceanview
+      projectName: projects[3],
+      location: locations[1],
+      isBooked: true,
+      parties: 1,
+      duration: 15,
+      broker: brokers[3],
+    },
+    {
+      id: getUniqueId(),
+      startTime: '10:00',
+      endTime: '11:30',
+      day: 1, // Monday - overlaps with Oceanview
+      projectName: projects[5],
+      location: locations[0],
+      isBooked: false,
+      parties: 2,
+      duration: 25,
+      broker: brokers[5],
+    },
+    {
+      id: getUniqueId(),
+      startTime: '14:00',
+      endTime: '15:30',
+      day: 1, // Monday - overlaps with Highland Park
+      projectName: projects[7],
+      location: locations[4],
+      isBooked: true,
+      parties: 4,
+      duration: 15,
+      broker: brokers[7],
     }
   );
 
@@ -91,6 +127,43 @@ export const generateMockTimeSlots = (currentDate: Date): TimeSlot[] => {
       parties: 2,
       duration: 30,
       broker: brokers[3],
+    },
+    // Adding overlapping slots for Tuesday
+    {
+      id: getUniqueId(),
+      startTime: '11:00',
+      endTime: '13:00',
+      day: 2, // Tuesday - overlaps with Central Heights
+      projectName: projects[6],
+      location: locations[3],
+      isBooked: true,
+      parties: 3,
+      duration: 20,
+      broker: brokers[6],
+    },
+    {
+      id: getUniqueId(),
+      startTime: '11:30',
+      endTime: '12:45',
+      day: 2, // Tuesday - overlaps with Central Heights and Sunset Hills
+      projectName: projects[4],
+      location: locations[2],
+      isBooked: false,
+      parties: 1,
+      duration: 15,
+      broker: brokers[4],
+    },
+    {
+      id: getUniqueId(),
+      startTime: '15:30',
+      endTime: '16:45',
+      day: 2, // Tuesday - overlaps with Riverside Apartments
+      projectName: projects[7],
+      location: locations[4],
+      isBooked: true,
+      parties: 2,
+      duration: 20,
+      broker: brokers[7],
     }
   );
 
@@ -107,6 +180,43 @@ export const generateMockTimeSlots = (currentDate: Date): TimeSlot[] => {
       parties: 2,
       duration: 60,
       broker: brokers[4],
+    },
+    // Adding more overlapping slots for Wednesday
+    {
+      id: getUniqueId(),
+      startTime: '10:00',
+      endTime: '12:00',
+      day: 3, // Wednesday - overlaps with Metro Lofts
+      projectName: projects[2],
+      location: locations[1],
+      isBooked: true,
+      parties: 3,
+      duration: 30,
+      broker: brokers[2],
+    },
+    {
+      id: getUniqueId(),
+      startTime: '10:30',
+      endTime: '11:45',
+      day: 3, // Wednesday - overlaps with Metro Lofts and Central Heights
+      projectName: projects[0],
+      location: locations[0],
+      isBooked: false,
+      parties: 1,
+      duration: 15,
+      broker: brokers[0],
+    },
+    {
+      id: getUniqueId(),
+      startTime: '11:00',
+      endTime: '12:30',
+      day: 3, // Wednesday - complex overlap with multiple events
+      projectName: projects[1],
+      location: locations[2],
+      isBooked: true,
+      parties: 2,
+      duration: 20,
+      broker: brokers[1],
     }
   );
 
@@ -135,6 +245,55 @@ export const generateMockTimeSlots = (currentDate: Date): TimeSlot[] => {
       parties: 4,
       duration: 15,
       broker: brokers[0],
+    },
+    // Adding overlapping slots for Thursday
+    {
+      id: getUniqueId(),
+      startTime: '09:00',
+      endTime: '10:30',
+      day: 4, // Thursday - overlaps with Parkside Gardens
+      projectName: projects[3],
+      location: locations[1],
+      isBooked: false,
+      parties: 2,
+      duration: 30,
+      broker: brokers[3],
+    },
+    {
+      id: getUniqueId(),
+      startTime: '08:30',
+      endTime: '09:45',
+      day: 4, // Thursday - overlaps with Parkside Gardens
+      projectName: projects[1],
+      location: locations[3],
+      isBooked: true,
+      parties: 1,
+      duration: 15,
+      broker: brokers[1],
+    },
+    {
+      id: getUniqueId(),
+      startTime: '14:30',
+      endTime: '16:00',
+      day: 4, // Thursday - overlaps with Oceanview
+      projectName: projects[2],
+      location: locations[0],
+      isBooked: false,
+      parties: 3,
+      duration: 20,
+      broker: brokers[2],
+    },
+    {
+      id: getUniqueId(),
+      startTime: '15:00',
+      endTime: '17:00',
+      day: 4, // Thursday - overlaps with Oceanview and Central Heights
+      projectName: projects[7],
+      location: locations[4],
+      isBooked: true,
+      parties: 2,
+      duration: 30,
+      broker: brokers[7],
     }
   );
 
@@ -163,10 +322,47 @@ export const generateMockTimeSlots = (currentDate: Date): TimeSlot[] => {
       parties: 1,
       duration: 90,
       broker: brokers[7],
+    },
+    // Adding overlapping slots for Friday
+    {
+      id: getUniqueId(),
+      startTime: '11:30',
+      endTime: '12:45',
+      day: 5, // Friday - overlaps with Sunset Hills
+      projectName: projects[4],
+      location: locations[2],
+      isBooked: true,
+      parties: 3,
+      duration: 25,
+      broker: brokers[4],
+    },
+    {
+      id: getUniqueId(),
+      startTime: '12:00',
+      endTime: '13:30',
+      day: 5, // Friday - overlaps with Sunset Hills and Metro Lofts
+      projectName: projects[0],
+      location: locations[4],
+      isBooked: false,
+      parties: 2,
+      duration: 15,
+      broker: brokers[0],
+    },
+    {
+      id: getUniqueId(),
+      startTime: '16:00',
+      endTime: '17:30',
+      day: 5, // Friday - overlaps with Downtown Collection
+      projectName: projects[3],
+      location: locations[3],
+      isBooked: true,
+      parties: 1,
+      duration: 30,
+      broker: brokers[3],
     }
   );
 
-  // Add broker events (personal calendar items)
+  // Add broker events (personal calendar items) - keep most of the existing ones
   // Sarah Johnson's events
   mockSlots.push(
     {
