@@ -1,9 +1,8 @@
 
-import React, { useEffect } from 'react';
+import React, { useState } from 'react';
 import { cn } from '@/lib/utils';
 import { calculateTimeSlotPosition, formatTime, getProjectColor, getTextColor, type TimeSlot } from '@/utils/calendarUtils';
 import TimeSlotOverlay from './TimeSlotOverlay';
-import { useTimeSlot } from '@/contexts/TimeSlotContext';
 
 interface TimeSlotProps {
   slot: TimeSlot;
@@ -11,7 +10,7 @@ interface TimeSlotProps {
 }
 
 const TimeSlotComponent: React.FC<TimeSlotProps> = ({ slot, allTimeSlots = [] }) => {
-  const { activeSlotId, setActiveSlotId, isSlotActive, lastClickTime } = useTimeSlot();
+  const [showDetails, setShowDetails] = useState<boolean>(false);
   
   const { top, height } = calculateTimeSlotPosition(slot.startTime, slot.endTime);
   
@@ -23,27 +22,6 @@ const TimeSlotComponent: React.FC<TimeSlotProps> = ({ slot, allTimeSlots = [] })
   // Calculate width based on column information (for overlapping events)
   const width = slot.columnCount ? `${100 / slot.columnCount}%` : '100%';
   const left = slot.column ? `${(slot.column * 100) / slot.columnCount!}%` : '0';
-  
-  // Clean up effect - if this time slot is unmounted while active, clear the active slot
-  useEffect(() => {
-    return () => {
-      if (isSlotActive(slot.id)) {
-        setActiveSlotId(null);
-      }
-    };
-  }, [slot.id, isSlotActive, setActiveSlotId]);
-  
-  // Handle click to always set this slot as active
-  const handleClick = (e: React.MouseEvent) => {
-    e.stopPropagation(); // Prevent event bubbling
-    
-    const now = Date.now();
-    // Ensure we don't have double-click issues causing the panel to close
-    lastClickTime.current = now;
-    
-    // Always set this slot as active, replacing any other active slot
-    setActiveSlotId(slot.id);
-  };
   
   return (
     <>
@@ -61,7 +39,7 @@ const TimeSlotComponent: React.FC<TimeSlotProps> = ({ slot, allTimeSlots = [] })
           color: textColor,
           borderColor: slot.isBooked ? (slot.isBrokerEvent ? 'transparent' : 'rgba(0,0,0,0.1)') : 'transparent',
         }}
-        onClick={handleClick}
+        onClick={() => setShowDetails(true)}
       >
         <div className="font-semibold truncate">{slot.projectName}</div>
         <div className="truncate">
@@ -76,8 +54,8 @@ const TimeSlotComponent: React.FC<TimeSlotProps> = ({ slot, allTimeSlots = [] })
       
       <TimeSlotOverlay 
         slot={slot} 
-        isOpen={isSlotActive(slot.id)}
-        onClose={() => setActiveSlotId(null)}
+        isOpen={showDetails}
+        onClose={() => setShowDetails(false)}
         allTimeSlots={allTimeSlots}
       />
     </>
