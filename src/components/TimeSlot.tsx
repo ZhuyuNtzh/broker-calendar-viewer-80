@@ -29,7 +29,7 @@ const TimeSlot: React.FC<TimeSlotProps> = ({ slot }) => {
   const left = `calc(${(column * 100) / columnCount}% + 2px)`; // Add a bit of margin
   
   const handleClick = () => {
-    // Only open overlay for non-broker events
+    // Only open overlay for non-broker events and non-realworks events
     if (!slot.isBrokerEvent) {
       setIsOverlayOpen(true);
     }

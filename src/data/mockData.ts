@@ -655,7 +655,7 @@ export const generateMockTimeSlots = (currentDate: Date): TimeSlot[] => {
       isBrokerEvent: true,
       location: 'Restaurant',
       parties: 2,
-      duration: 60,
+      duration: 60
     },
     {
       id: getUniqueId(),
@@ -668,7 +668,7 @@ export const generateMockTimeSlots = (currentDate: Date): TimeSlot[] => {
       isBrokerEvent: true,
       location: 'Office',
       parties: 5,
-      duration: 60,
+      duration: 60
     }
   );
   
@@ -685,7 +685,7 @@ export const generateMockTimeSlots = (currentDate: Date): TimeSlot[] => {
       isBrokerEvent: true,
       location: 'Property Site',
       parties: 1,
-      duration: 60,
+      duration: 60
     },
     {
       id: getUniqueId(),
@@ -698,7 +698,7 @@ export const generateMockTimeSlots = (currentDate: Date): TimeSlot[] => {
       isBrokerEvent: true,
       location: 'Office',
       parties: 2,
-      duration: 90,
+      duration: 90
     }
   );
   
@@ -715,7 +715,7 @@ export const generateMockTimeSlots = (currentDate: Date): TimeSlot[] => {
       isBrokerEvent: true,
       location: 'Virtual',
       parties: 1,
-      duration: 60,
+      duration: 60
     }
   );
 
@@ -735,7 +735,7 @@ export const generateMockTimeSlots = (currentDate: Date): TimeSlot[] => {
         isBrokerEvent: true,
         location: 'Office',
         parties: 1,
-        duration: 60,
+        duration: 60
       },
       {
         id: getUniqueId(),
@@ -748,7 +748,7 @@ export const generateMockTimeSlots = (currentDate: Date): TimeSlot[] => {
         isBrokerEvent: true,
         location: 'Office',
         parties: 1,
-        duration: 60,
+        duration: 60
       },
       // Overlapping with property showing
       {
@@ -762,7 +762,7 @@ export const generateMockTimeSlots = (currentDate: Date): TimeSlot[] => {
         isBrokerEvent: true,
         location: 'Virtual',
         parties: 1,
-        duration: 45,
+        duration: 45
       }
     );
     
@@ -779,7 +779,7 @@ export const generateMockTimeSlots = (currentDate: Date): TimeSlot[] => {
         isBrokerEvent: true,
         location: 'Office',
         parties: 2,
-        duration: 60,
+        duration: 60
       },
       {
         id: getUniqueId(),
@@ -792,7 +792,7 @@ export const generateMockTimeSlots = (currentDate: Date): TimeSlot[] => {
         isBrokerEvent: true,
         location: 'Training Room',
         parties: 10,
-        duration: 60,
+        duration: 60
       },
       // Overlapping event
       {
@@ -806,7 +806,7 @@ export const generateMockTimeSlots = (currentDate: Date): TimeSlot[] => {
         isBrokerEvent: true,
         location: 'Virtual',
         parties: 1,
-        duration: 45,
+        duration: 45
       }
     );
     
@@ -823,7 +823,7 @@ export const generateMockTimeSlots = (currentDate: Date): TimeSlot[] => {
         isBrokerEvent: true,
         location: 'Office',
         parties: 1,
-        duration: 60,
+        duration: 60
       },
       {
         id: getUniqueId(),
@@ -836,7 +836,7 @@ export const generateMockTimeSlots = (currentDate: Date): TimeSlot[] => {
         isBrokerEvent: true,
         location: 'Conference Room',
         parties: 4,
-        duration: 60,
+        duration: 60
       },
       {
         id: getUniqueId(),
@@ -849,7 +849,7 @@ export const generateMockTimeSlots = (currentDate: Date): TimeSlot[] => {
         isBrokerEvent: true,
         location: 'Property Site',
         parties: 3,
-        duration: 90,
+        duration: 90
       }
     );
 
@@ -867,7 +867,7 @@ export const generateMockTimeSlots = (currentDate: Date): TimeSlot[] => {
         isBrokerEvent: true,
         location: 'Cafe',
         parties: 6,
-        duration: 60,
+        duration: 60
       },
       {
         id: getUniqueId(),
@@ -880,7 +880,7 @@ export const generateMockTimeSlots = (currentDate: Date): TimeSlot[] => {
         isBrokerEvent: true,
         location: 'Training Room',
         parties: 10,
-        duration: 60,
+        duration: 60
       }
     );
 
@@ -897,7 +897,7 @@ export const generateMockTimeSlots = (currentDate: Date): TimeSlot[] => {
         isBrokerEvent: true,
         location: 'Property Site',
         parties: 2,
-        duration: 60,
+        duration: 60
       },
       {
         id: getUniqueId(),
@@ -910,7 +910,7 @@ export const generateMockTimeSlots = (currentDate: Date): TimeSlot[] => {
         isBrokerEvent: true,
         location: 'Conference Room',
         parties: 8,
-        duration: 60,
+        duration: 60
       }
     );
   } else {
@@ -928,7 +928,7 @@ export const generateMockTimeSlots = (currentDate: Date): TimeSlot[] => {
         isBrokerEvent: true,
         location: 'Office',
         parties: 4,
-        duration: 60,
+        duration: 60
       },
       {
         id: getUniqueId(),
@@ -941,7 +941,7 @@ export const generateMockTimeSlots = (currentDate: Date): TimeSlot[] => {
         isBrokerEvent: true,
         location: 'Conference Room',
         parties: 5,
-        duration: 60,
+        duration: 60
       }
     );
     
@@ -958,7 +958,7 @@ export const generateMockTimeSlots = (currentDate: Date): TimeSlot[] => {
         isBrokerEvent: true,
         location: 'Training Room',
         parties: 10,
-        duration: 60,
+        duration: 60
       },
       {
         id: getUniqueId(),
@@ -971,7 +971,7 @@ export const generateMockTimeSlots = (currentDate: Date): TimeSlot[] => {
         isBrokerEvent: true,
         location: 'Office',
         parties: 6,
-        duration: 60,
+        duration: 60
       }
     );
     
@@ -988,7 +988,7 @@ export const generateMockTimeSlots = (currentDate: Date): TimeSlot[] => {
         isBrokerEvent: true,
         location: 'Office',
         parties: 3,
-        duration: 60,
+        duration: 60
       },
       {
         id: getUniqueId(),
@@ -1001,7 +1001,7 @@ export const generateMockTimeSlots = (currentDate: Date): TimeSlot[] => {
         isBrokerEvent: true,
         location: 'Office',
         parties: 1,
-        duration: 60,
+        duration: 60
       }
     );
 
@@ -1019,7 +1019,7 @@ export const generateMockTimeSlots = (currentDate: Date): TimeSlot[] => {
         isBrokerEvent: true,
         location: 'Virtual',
         parties: 3,
-        duration: 60,
+        duration: 60
       },
       {
         id: getUniqueId(),
@@ -1032,7 +1032,7 @@ export const generateMockTimeSlots = (currentDate: Date): TimeSlot[] => {
         isBrokerEvent: true,
         location: 'Office',
         parties: 1,
-        duration: 60,
+        duration: 60
       }
     );
 
@@ -1049,7 +1049,7 @@ export const generateMockTimeSlots = (currentDate: Date): TimeSlot[] => {
         isBrokerEvent: true,
         location: 'Conference Room',
         parties: 4,
-        duration: 60,
+        duration: 60
       },
       {
         id: getUniqueId(),
@@ -1062,7 +1062,7 @@ export const generateMockTimeSlots = (currentDate: Date): TimeSlot[] => {
         isBrokerEvent: true,
         location: 'Office',
         parties: 2,
-        duration: 60,
+        duration: 60
       }
     );
   }

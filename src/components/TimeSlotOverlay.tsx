@@ -1,12 +1,11 @@
 
 import React from 'react';
-import { X, User, MapPin, Clock, ArrowRight, Video, Users, Calendar } from 'lucide-react';
+import { X, User, MapPin, Clock, ArrowRight, Calendar } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { formatTime } from '@/utils/calendarUtils';
 import { Separator } from '@/components/ui/separator';
 import type { TimeSlot } from '@/utils/calendarUtils';
-import { Button } from '@/components/ui/button';
-import { format, parse } from 'date-fns';
+import { format } from 'date-fns';
 
 interface TimeSlotOverlayProps {
   slot: TimeSlot | null;
@@ -55,6 +54,9 @@ const TimeSlotOverlay: React.FC<TimeSlotOverlayProps> = ({ slot, isOpen, onClose
   const today = new Date();
   const mockDate = today;
 
+  // Mock zipcode for the location
+  const zipcode = "10001"; // Default zipcode
+
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
       <DialogContent className="sm:max-w-md animate-scale-in">
@@ -98,40 +100,10 @@ const TimeSlotOverlay: React.FC<TimeSlotOverlayProps> = ({ slot, isOpen, onClose
             </div>
           </div>
           
-          {/* Location Section */}
-          {slot.location && (
-            <div className="flex items-center ml-[52px]">
-              <MapPin className="h-5 w-5 text-gray-500 mr-2" />
-              <div className="text-sm font-medium">{slot.location}</div>
-            </div>
-          )}
-          
-          {/* Video Call Option */}
+          {/* Location Section with Zipcode */}
           <div className="flex items-center ml-[52px]">
-            <Video className="h-5 w-5 text-gray-500 mr-2" />
-            <div className="text-sm font-medium text-blue-600">Google Meet</div>
-          </div>
-          
-          <Separator />
-          
-          {/* Guests Section */}
-          <div className="space-y-2">
-            <div className="flex items-center mb-3">
-              <Users className="h-5 w-5 text-gray-500 mr-2" />
-              <div className="font-medium">Guests</div>
-            </div>
-            
-            <div className="flex gap-2 ml-7">
-              <div className="h-8 w-8 rounded-full bg-purple-400 flex items-center justify-center text-white">
-                J
-              </div>
-              <div className="h-8 w-8 rounded-full bg-gray-200 flex items-center justify-center text-gray-500">
-                T
-              </div>
-              <div className="text-sm ml-2 flex flex-col justify-center">
-                <span>1 going, 1 awaiting</span>
-              </div>
-            </div>
+            <MapPin className="h-5 w-5 text-gray-500 mr-2" />
+            <div className="text-sm font-medium">{zipcode}</div>
           </div>
           
           {timeSlots.length > 0 && (
@@ -158,13 +130,6 @@ const TimeSlotOverlay: React.FC<TimeSlotOverlayProps> = ({ slot, isOpen, onClose
               </div>
             </>
           )}
-          
-          {/* Action Button */}
-          <div className="flex justify-end pt-2">
-            <Button className="bg-green-500 hover:bg-green-600">
-              Send event
-            </Button>
-          </div>
         </div>
       </DialogContent>
     </Dialog>
