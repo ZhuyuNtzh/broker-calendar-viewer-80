@@ -14,9 +14,12 @@ const TimeSlot: React.FC<TimeSlotProps> = ({ slot }) => {
   const [isOverlayOpen, setIsOverlayOpen] = useState(false);
   const { top, height } = calculateTimeSlotPosition(slot.startTime, slot.endTime);
   
+  // Get the project name to use for coloring
+  const colorSource = slot.associatedProject || slot.projectName;
+  
   // Get dynamic color based on project name
-  const backgroundColor = getProjectColor(slot.projectName, slot.isBrokerEvent);
-  const textColor = slot.isBrokerEvent ? '#4b5563' : 'white';
+  const backgroundColor = getProjectColor(colorSource, slot.isBrokerEvent);
+  const textColor = getTextColor(backgroundColor);
   
   // Calculate width and position for overlapping events
   const columnCount = slot.columnCount || 1;
@@ -35,7 +38,7 @@ const TimeSlot: React.FC<TimeSlotProps> = ({ slot }) => {
   
   // Determine border style for broker events
   const borderStyle = slot.isBrokerEvent ? 
-    { borderLeft: `3px solid ${getProjectColor(slot.projectName, false)}` } : {};
+    { borderLeft: `3px solid ${getProjectColor(colorSource, false)}` } : {};
   
   return (
     <>

@@ -8,6 +8,7 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
 import { User, Calendar as CalendarIcon } from 'lucide-react';
+import type { TimeSlot } from '@/utils/calendarUtils';
 
 const Index = () => {
   const [currentDate, setCurrentDate] = useState(new Date());
@@ -28,8 +29,18 @@ const Index = () => {
     return Array.from(projectBrokerMap.keys());
   }, [projectBrokerMap]);
   
+  // Create a reverse lookup map: broker name -> associated project
+  const brokerProjectMap = useMemo(() => {
+    const map = new Map<string, string>();
+    projectBrokerMap.forEach((broker, project) => {
+      map.set(broker, project);
+    });
+    return map;
+  }, [projectBrokerMap]);
+  
   const filteredTimeSlots = useMemo(() => {
-    return allTimeSlots.filter(slot => {
+    // First, filter the time slots based on the selected project
+    const filtered = allTimeSlots.filter(slot => {
       if (selectedProject === "ALL") {
         // Show only property events, no broker events
         return !slot.isBrokerEvent;
@@ -48,7 +59,22 @@ const Index = () => {
       
       return false;
     });
-  }, [allTimeSlots, selectedProject, projectBrokerMap]);
+    
+    // Now process the slots to add associatedProject for broker events
+    return filtered.map(slot => {
+      if (slot.isBrokerEvent && slot.broker) {
+        // For broker events, find which property they're associated with
+        const associatedProject = selectedProject !== "ALL" 
+          ? selectedProject // If we've already selected a project, use that
+          : brokerProjectMap.get(slot.broker); // Otherwise look up from the map
+          
+        if (associatedProject) {
+          return { ...slot, associatedProject };
+        }
+      }
+      return slot;
+    });
+  }, [allTimeSlots, selectedProject, projectBrokerMap, brokerProjectMap]);
 
   const handlePreviousWeek = () => {
     setCurrentDate(prev => subWeeks(prev, 1));
