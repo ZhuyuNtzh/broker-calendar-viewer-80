@@ -36,11 +36,18 @@ const TimeSlot: React.FC<TimeSlotProps> = ({ slot }) => {
   const borderStyle = slot.isBrokerEvent ? 
     { borderLeft: `3px solid ${getProjectColor(colorSource, false)}` } : {};
   
+  // Add specific styling for cross-week events
+  const crossWeekStyles = slot.isCrossWeek ? {
+    borderRight: '4px dashed rgba(0,0,0,0.2)',
+    borderBottom: '4px dashed rgba(0,0,0,0.2)',
+  } : {};
+  
   return (
     <>
       <div
         className={cn(
-          'calendar-event absolute animate-scale-in cursor-pointer hover:brightness-95 transition-all'
+          'calendar-event absolute animate-scale-in cursor-pointer hover:brightness-95 transition-all',
+          slot.isCrossWeek && 'cross-week-event'
         )}
         style={{ 
           top: `${top}px`, 
@@ -49,7 +56,8 @@ const TimeSlot: React.FC<TimeSlotProps> = ({ slot }) => {
           left,
           backgroundColor,
           color: textColor,
-          ...borderStyle
+          ...borderStyle,
+          ...crossWeekStyles
         }}
         onClick={handleClick}
       >
@@ -57,6 +65,7 @@ const TimeSlot: React.FC<TimeSlotProps> = ({ slot }) => {
           <div>
             <h4 className="font-medium text-sm truncate">
               {slot.projectName}
+              {slot.isCrossWeek && <span className="ml-1">↪</span>}
             </h4>
             <div className="text-xs mt-1">
               {formatTime(slot.startTime)} - {formatTime(slot.endTime)}

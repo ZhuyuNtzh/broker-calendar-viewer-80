@@ -1,4 +1,3 @@
-
 import { addDays, format, startOfWeek, parse, isToday } from 'date-fns';
 
 // Property color mapping - predefined vibrant colors
@@ -49,6 +48,8 @@ export type TimeSlot = {
   broker?: string; // Broker name
   isBrokerEvent?: boolean; // Flag to identify broker events
   associatedProject?: string; // Adding this field to track which property a broker event is associated with
+  isCrossWeek?: boolean; // Flag to indicate events that span multiple weeks
+  endDay?: number; // The end day for cross-week events
   
   // Added fields for positioning
   column?: number; // For positioning when events overlap
