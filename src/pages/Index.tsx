@@ -108,7 +108,7 @@ const Index = () => {
         />
         
         <div className="flex gap-6 mt-4">
-          <div className="flex-1 bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden animate-fade-in">
+          <div className="flex-1 bg-white rounded-lg border border-gray-200 overflow-hidden animate-fade-in">
             <WeeklyCalendar 
               currentDate={currentDate} 
               timeSlots={filteredTimeSlots}
