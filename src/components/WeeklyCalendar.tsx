@@ -1,21 +1,57 @@
 
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import { HOURS, TimeSlot, getWeekDays, formatDay, formatDayNumber, checkIsToday, organizeTimeSlots } from '@/utils/calendarUtils';
 import TimeSlotComponent from './TimeSlot';
 import { cn } from '@/lib/utils';
+import BookingDialog from './BookingDialog';
 
 interface WeeklyCalendarProps {
   currentDate: Date;
   timeSlots: TimeSlot[];
+  projectNames?: string[];
 }
 
-const WeeklyCalendar: React.FC<WeeklyCalendarProps> = ({ currentDate, timeSlots }) => {
+const WeeklyCalendar: React.FC<WeeklyCalendarProps> = ({ 
+  currentDate, 
+  timeSlots,
+  projectNames = [] 
+}) => {
   const weekDays = getWeekDays(currentDate);
+  const [bookingDialogInfo, setBookingDialogInfo] = useState<{
+    isOpen: boolean;
+    day: Date;
+    startTime: string;
+    endTime: string;
+  }>({
+    isOpen: false,
+    day: new Date(),
+    startTime: "09:00",
+    endTime: "10:00"
+  });
   
   // Organize time slots to handle overlaps
   const organizedTimeSlots = useMemo(() => {
     return organizeTimeSlots(timeSlots);
   }, [timeSlots]);
+  
+  // Handle click on a calendar cell
+  const handleCellClick = (day: Date, hour: number) => {
+    // Format hours to HH:mm format
+    const startTime = `${hour.toString().padStart(2, '0')}:00`;
+    const endTime = `${(hour + 1).toString().padStart(2, '0')}:00`;
+    
+    setBookingDialogInfo({
+      isOpen: true,
+      day,
+      startTime,
+      endTime
+    });
+  };
+  
+  // Close the booking dialog
+  const closeBookingDialog = () => {
+    setBookingDialogInfo(prev => ({ ...prev, isOpen: false }));
+  };
   
   return (
     <div className="w-full overflow-hidden">
@@ -63,9 +99,13 @@ const WeeklyCalendar: React.FC<WeeklyCalendarProps> = ({ currentDate, timeSlots 
               checkIsToday(day) && "bg-calendar-today-highlight"
             )}
           >
-            {/* Hour grid lines */}
+            {/* Hour grid lines with click handler */}
             {HOURS.map((hour) => (
-              <div key={hour} className="h-[60px] border-b border-gray-100"></div>
+              <div 
+                key={hour} 
+                className="h-[60px] border-b border-gray-100 cursor-pointer hover:bg-gray-50"
+                onClick={() => handleCellClick(day, hour)}
+              ></div>
             ))}
             
             {/* Time slots for this day */}
@@ -84,6 +124,16 @@ const WeeklyCalendar: React.FC<WeeklyCalendarProps> = ({ currentDate, timeSlots 
           </div>
         ))}
       </div>
+      
+      {/* Booking Dialog */}
+      <BookingDialog 
+        isOpen={bookingDialogInfo.isOpen}
+        onClose={closeBookingDialog}
+        day={bookingDialogInfo.day}
+        startTime={bookingDialogInfo.startTime}
+        endTime={bookingDialogInfo.endTime}
+        projectNames={projectNames}
+      />
     </div>
   );
 };
