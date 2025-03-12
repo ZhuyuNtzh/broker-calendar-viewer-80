@@ -1,8 +1,9 @@
 
 import React from 'react';
-import { X, MapPin, Clock, Calendar, User } from 'lucide-react';
+import { X, MapPin, Clock, Calendar, User, ExternalLink } from 'lucide-react';
 import { formatTime } from '@/utils/calendarUtils';
 import { Separator } from '@/components/ui/separator';
+import { Button } from '@/components/ui/button';
 import type { TimeSlot } from '@/utils/calendarUtils';
 import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
@@ -103,6 +104,17 @@ const TimeSlotOverlay: React.FC<TimeSlotOverlayProps> = ({ slot, isOpen, onClose
               <div className="flex items-center ml-[52px]">
                 <MapPin className="h-5 w-5 text-gray-500 mr-2" />
                 <div className="text-sm font-medium">{zipcode}</div>
+              </div>
+              
+              {/* View Project Button */}
+              <div className="ml-[52px] mt-2">
+                <Button 
+                  className="bg-black hover:bg-black/90 text-white"
+                  size="sm"
+                >
+                  <ExternalLink className="h-4 w-4 mr-1" />
+                  View Project
+                </Button>
               </div>
               
               {/* Time Slots Section */}
