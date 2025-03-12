@@ -1,4 +1,3 @@
-
 import { addDays, format, startOfWeek, parse, isToday } from 'date-fns';
 
 export type TimeSlot = {
@@ -26,9 +25,10 @@ export const formatTime = (time: string): string => {
   return format(parse(time, 'HH:mm', new Date()), 'h:mm a');
 };
 
+// Modified to return only Monday to Friday (5 days)
 export const getWeekDays = (date: Date): Date[] => {
   const start = startOfWeek(date, { weekStartsOn: 1 }); // Start on Monday
-  return Array.from({ length: 7 }, (_, i) => addDays(start, i));
+  return Array.from({ length: 5 }, (_, i) => addDays(start, i)); // Only return 5 days
 };
 
 export const formatDay = (date: Date): string => {

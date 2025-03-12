@@ -20,7 +20,7 @@ const WeeklyCalendar: React.FC<WeeklyCalendarProps> = ({ currentDate, timeSlots 
   return (
     <div className="w-full overflow-hidden">
       {/* Day headers */}
-      <div className="grid grid-cols-[60px_repeat(7,1fr)] border-b">
+      <div className="grid grid-cols-[60px_repeat(5,1fr)] border-b">
         <div className="time-column"></div>
         {weekDays.map((day, index) => (
           <div 
@@ -42,7 +42,7 @@ const WeeklyCalendar: React.FC<WeeklyCalendarProps> = ({ currentDate, timeSlots 
       </div>
       
       {/* Calendar grid */}
-      <div className="calendar-grid-container relative grid grid-cols-[60px_repeat(7,1fr)] overflow-y-auto no-scrollbar">
+      <div className="calendar-grid-container relative grid grid-cols-[60px_repeat(5,1fr)] overflow-y-auto no-scrollbar">
         {/* Time labels */}
         <div className="time-column">
           {HOURS.map((hour) => (
@@ -55,12 +55,12 @@ const WeeklyCalendar: React.FC<WeeklyCalendarProps> = ({ currentDate, timeSlots 
         </div>
         
         {/* Day columns */}
-        {weekDays.map((_, dayIndex) => (
+        {weekDays.map((day, dayIndex) => (
           <div 
             key={dayIndex} 
             className={cn(
               "day-column relative border-l",
-              checkIsToday(weekDays[dayIndex]) && "bg-calendar-today-highlight"
+              checkIsToday(day) && "bg-calendar-today-highlight"
             )}
           >
             {/* Hour grid lines */}
@@ -70,6 +70,12 @@ const WeeklyCalendar: React.FC<WeeklyCalendarProps> = ({ currentDate, timeSlots 
             
             {/* Time slots for this day */}
             {organizedTimeSlots
+              .filter(slot => {
+                // Filter by weekday (Monday=1, Tuesday=2, etc.)
+                const slotDay = slot.day;
+                // Only show slots for Monday-Friday (day 1-5)
+                return slotDay >= 1 && slotDay <= 5;
+              })
               .filter(slot => slot.day === dayIndex + 1) // Our day index is 1-based (Monday=1)
               .map(slot => (
                 <TimeSlotComponent key={slot.id} slot={slot} />
