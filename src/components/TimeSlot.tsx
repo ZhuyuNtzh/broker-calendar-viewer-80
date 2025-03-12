@@ -5,7 +5,6 @@ import { formatTime, calculateTimeSlotPosition } from '@/utils/calendarUtils';
 import { User } from 'lucide-react';
 import type { TimeSlot as TimeSlotType } from '@/utils/calendarUtils';
 import TimeSlotOverlay from './TimeSlotOverlay';
-import { getPropertyColor, getLighterColor } from '@/utils/colorUtils';
 
 interface TimeSlotProps {
   slot: TimeSlotType;
@@ -15,6 +14,14 @@ const TimeSlot: React.FC<TimeSlotProps> = ({ slot }) => {
   const [isOverlayOpen, setIsOverlayOpen] = useState(false);
   const { top, height } = calculateTimeSlotPosition(slot.startTime, slot.endTime);
   
+  // Determine status class
+  let statusClass = '';
+  if (slot.isBrokerEvent) {
+    statusClass = 'broker-event';
+  } else {
+    statusClass = slot.isBooked ? 'booked' : 'available';
+  }
+  
   // Calculate width and position for overlapping events
   const columnCount = slot.columnCount || 1;
   const column = slot.column || 0;
@@ -22,12 +29,6 @@ const TimeSlot: React.FC<TimeSlotProps> = ({ slot }) => {
   // Calculate width and left position as percentages
   const width = `calc(${100 / columnCount}% - 4px)`;  // Subtract a bit for spacing
   const left = `calc(${(column * 100) / columnCount}% + 2px)`; // Add a bit of margin
-  
-  // Get color based on property name
-  const baseColor = getPropertyColor(slot.projectName);
-  
-  // For broker events, use a lighter shade
-  const bgColor = slot.isBrokerEvent ? getLighterColor(baseColor) : baseColor;
   
   // Check if this slot has multiple parties and time slots
   const hasBookingSlots = !slot.isBrokerEvent && slot.parties && slot.duration;
@@ -41,16 +42,14 @@ const TimeSlot: React.FC<TimeSlotProps> = ({ slot }) => {
       <div
         className={cn(
           'calendar-event absolute animate-scale-in cursor-pointer hover:brightness-95 transition-all',
-          slot.isBrokerEvent ? 'broker-event' : 'property-event'
+          statusClass,
+          hasBookingSlots && 'has-booking-slots'
         )}
         style={{ 
           top: `${top}px`, 
           height: `${height}px`,
           width,
           left,
-          backgroundColor: bgColor,
-          borderLeftColor: slot.isBrokerEvent ? baseColor : undefined,
-          borderLeftWidth: slot.isBrokerEvent ? '3px' : undefined,
         }}
         onClick={handleClick}
       >
@@ -58,7 +57,6 @@ const TimeSlot: React.FC<TimeSlotProps> = ({ slot }) => {
           <div>
             <h4 className={cn(
               "font-medium text-sm truncate",
-              slot.isBrokerEvent ? "text-gray-700" : "text-white"
             )}>
               {slot.projectName}
             </h4>
