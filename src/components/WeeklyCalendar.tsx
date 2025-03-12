@@ -120,7 +120,11 @@ const WeeklyCalendar: React.FC<WeeklyCalendarProps> = ({
               })
               .filter(slot => slot.day === dayIndex + 1) // Our day index is 1-based (Monday=1)
               .map(slot => (
-                <TimeSlotComponent key={slot.id} slot={slot} />
+                <TimeSlotComponent 
+                  key={slot.id} 
+                  slot={slot} 
+                  allTimeSlots={timeSlots} // Pass all time slots to components
+                />
               ))
             }
           </div>

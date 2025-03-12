@@ -1,30 +1,32 @@
-
 import React from 'react';
-import { X, MapPin, Clock, Calendar, User, ExternalLink } from 'lucide-react';
+import { X, MapPin, Clock, Calendar, User, ExternalLink, CalendarClock } from 'lucide-react';
 import { formatTime } from '@/utils/calendarUtils';
 import { Separator } from '@/components/ui/separator';
 import { Button } from '@/components/ui/button';
 import type { TimeSlot } from '@/utils/calendarUtils';
-import { format } from 'date-fns';
+import { format, addDays, isSameDay, isBefore, isAfter, isWithinInterval } from 'date-fns';
 import { cn } from '@/lib/utils';
 
 interface TimeSlotOverlayProps {
   slot: TimeSlot | null;
   isOpen: boolean;
   onClose: () => void;
+  allTimeSlots?: TimeSlot[];
 }
 
-const TimeSlotOverlay: React.FC<TimeSlotOverlayProps> = ({ slot, isOpen, onClose }) => {
+const TimeSlotOverlay: React.FC<TimeSlotOverlayProps> = ({ 
+  slot, 
+  isOpen, 
+  onClose, 
+  allTimeSlots = [] 
+}) => {
   if (!slot) return null;
 
-  // Get today's date or mock date for display
   const today = new Date();
   const mockDate = today;
 
-  // Mock zipcode for the location
-  const zipcode = "10001"; // Default zipcode
+  const zipcode = "10001";
 
-  // Mock time slot data
   const mockTimeSlots = [
     { time: '2:30 to 2:50', slot1: 'John Snow', slot2: 'Regula Jansen' },
     { time: '2:55 to 3:15', slot1: 'Arya Stark', slot2: 'Mark Zukerberg' },
@@ -33,14 +35,54 @@ const TimeSlotOverlay: React.FC<TimeSlotOverlayProps> = ({ slot, isOpen, onClose
     { time: '4:10 to 4:30', slot1: 'Jon Snow', slot2: 'Steve Jobs' },
   ];
 
-  // Generate time slots based on start and end time if duration and parties are provided
   const timeSlots = slot.parties && slot.duration ? 
     generateTimeSlots(slot.startTime, slot.endTime, slot.duration, slot.parties) : 
     mockTimeSlots;
 
+  const otherViewings = React.useMemo(() => {
+    if (!allTimeSlots.length || !slot.projectName) return [];
+
+    const currentSlotDay = slot.day;
+    const currentDate = new Date();
+    const weekStartDate = new Date(currentDate);
+    weekStartDate.setDate(weekStartDate.getDate() - weekStartDate.getDay() + 1);
+
+    const slotDate = new Date(weekStartDate);
+    slotDate.setDate(slotDate.getDate() + (currentSlotDay - 1));
+
+    return allTimeSlots
+      .filter(otherSlot => 
+        otherSlot.projectName === slot.projectName && 
+        otherSlot.id !== slot.id && 
+        !otherSlot.isBrokerEvent
+      )
+      .slice(0, 5)
+      .map(otherSlot => {
+        const otherSlotDate = new Date(weekStartDate);
+        otherSlotDate.setDate(otherSlotDate.getDate() + (otherSlot.day - 1));
+
+        const dateString = format(otherSlotDate, 'EEE, MMM d');
+        const timeString = `${formatTime(otherSlot.startTime)} - ${formatTime(otherSlot.endTime)}`;
+
+        return {
+          id: otherSlot.id,
+          date: dateString,
+          time: timeString,
+          isToday: isSameDay(otherSlotDate, currentDate),
+          isFuture: isAfter(otherSlotDate, currentDate)
+        };
+      })
+      .sort((a, b) => {
+        if (a.isToday) return -1;
+        if (b.isToday) return 1;
+        if (a.isFuture && !b.isFuture) return -1;
+        if (!a.isFuture && b.isFuture) return 1;
+        return 0;
+      });
+  }, [allTimeSlots, slot]);
+
   return (
     <>
-      {/* Backdrop for mobile */}
       <div 
         className={cn(
           "fixed inset-0 bg-black/50 z-40 md:hidden transition-opacity duration-300",
@@ -49,7 +91,6 @@ const TimeSlotOverlay: React.FC<TimeSlotOverlayProps> = ({ slot, isOpen, onClose
         onClick={onClose}
       />
       
-      {/* Sidebar Panel */}
       <div 
         className={cn(
           "fixed top-0 right-0 h-full bg-white shadow-lg z-50 w-full max-w-md transition-transform duration-300 ease-in-out transform",
@@ -57,7 +98,6 @@ const TimeSlotOverlay: React.FC<TimeSlotOverlayProps> = ({ slot, isOpen, onClose
         )}
       >
         <div className="flex flex-col h-full">
-          {/* Header */}
           <div className="border-b p-4">
             <div className="flex items-center justify-between mb-2">
               <div className="flex items-center gap-3">
@@ -78,10 +118,8 @@ const TimeSlotOverlay: React.FC<TimeSlotOverlayProps> = ({ slot, isOpen, onClose
             </p>
           </div>
           
-          {/* Content */}
           <div className="flex-1 overflow-y-auto p-4">
             <div className="space-y-5">
-              {/* Time & Date Section */}
               <div className="flex items-center gap-6 ml-[52px]">
                 <div className="flex items-center">
                   <Clock className="h-5 w-5 text-gray-500 mr-2" />
@@ -100,13 +138,11 @@ const TimeSlotOverlay: React.FC<TimeSlotOverlayProps> = ({ slot, isOpen, onClose
                 </div>
               </div>
               
-              {/* Location Section with Zipcode */}
               <div className="flex items-center ml-[52px]">
                 <MapPin className="h-5 w-5 text-gray-500 mr-2" />
                 <div className="text-sm font-medium">{zipcode}</div>
               </div>
               
-              {/* View Project Button */}
               <div className="ml-[52px] mt-2">
                 <Button 
                   className="bg-black hover:bg-black/90 text-white"
@@ -117,7 +153,36 @@ const TimeSlotOverlay: React.FC<TimeSlotOverlayProps> = ({ slot, isOpen, onClose
                 </Button>
               </div>
               
-              {/* Time Slots Section */}
+              {otherViewings.length > 0 && (
+                <>
+                  <Separator className="my-4" />
+                  <div className="space-y-3">
+                    <div className="font-medium flex items-center">
+                      <CalendarClock className="h-4 w-4 mr-1.5 text-gray-500" />
+                      Other Scheduled Viewings
+                    </div>
+                    <div className="space-y-2 bg-gray-50 p-3 rounded-md">
+                      {otherViewings.map((viewing) => (
+                        <div 
+                          key={viewing.id} 
+                          className={cn(
+                            "text-sm py-1.5 px-2 rounded border-l-2",
+                            viewing.isToday 
+                              ? "border-blue-500 bg-blue-50" 
+                              : viewing.isFuture 
+                                ? "border-emerald-500 bg-emerald-50" 
+                                : "border-gray-300"
+                          )}
+                        >
+                          <div className="font-medium">{viewing.date}</div>
+                          <div className="text-gray-600">{viewing.time}</div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </>
+              )}
+              
               <Separator className="my-4" />
               <div className="space-y-3">
                 <div className="font-medium">Time Slots</div>
@@ -147,59 +212,26 @@ const TimeSlotOverlay: React.FC<TimeSlotOverlayProps> = ({ slot, isOpen, onClose
   );
 };
 
-// Helper function to generate time slots
 function generateTimeSlots(startTime: string, endTime: string, duration: number, parties: number) {
   const [startHour, startMinute] = startTime.split(':').map(Number);
   const [endHour, endMinute] = endTime.split(':').map(Number);
 
-  // Convert to minutes since midnight
   const startMinutes = startHour * 60 + startMinute;
   const endMinutes = endHour * 60 + endMinute;
   
-  // Total event time in minutes
   const totalTime = endMinutes - startMinutes;
   
-  // Number of slots we can fit
   const numSlots = Math.floor(totalTime / duration);
   
-  // Generate mock names for slots
   const names = [
     'John Snow', 'Arya Stark', 'Tyrion Lannister', 'Daenerys Targaryen',
     'Jon Snow', 'Sansa Stark', 'Cersei Lannister', 'Jaime Lannister',
     'Regula Jansen', 'Mark Zukerberg', 'Tim Cook', 'Bill Gates', 'Steve Jobs'
   ];
   
-  // Generate time slots
   const slots = [];
   for (let i = 0; i < numSlots; i++) {
     const slotStartMinutes = startMinutes + i * duration;
-    const slotEndMinutes = slotStartMinutes + duration - 5; // 5 minutes less to allow for transition
-    
-    const slotStartHour = Math.floor(slotStartMinutes / 60);
-    const slotStartMinute = slotStartMinutes % 60;
-    const slotEndHour = Math.floor(slotEndMinutes / 60);
-    const slotEndMinute = slotEndMinutes % 60;
-    
-    const formatTimeNumber = (num: number) => num.toString().padStart(2, '0');
-    
-    const slotStartFormatted = `${slotStartHour > 12 ? slotStartHour - 12 : slotStartHour}:${formatTimeNumber(slotStartMinute)}`;
-    const slotEndFormatted = `${slotEndHour > 12 ? slotEndHour - 12 : slotEndHour}:${formatTimeNumber(slotEndMinute)}`;
-    
-    // Randomly select names for each slot
-    const randomIndex1 = Math.floor(Math.random() * names.length);
-    let randomIndex2 = Math.floor(Math.random() * names.length);
-    while (randomIndex2 === randomIndex1) {
-      randomIndex2 = Math.floor(Math.random() * names.length);
-    }
-    
-    slots.push({
-      time: `${slotStartFormatted} to ${slotEndFormatted}`,
-      slot1: names[randomIndex1],
-      slot2: names[randomIndex2]
-    });
-  }
-  
-  return slots;
-}
+    const slotEndMinutes = slotStartMinutes + duration - 5;
 
-export default TimeSlotOverlay;
+
