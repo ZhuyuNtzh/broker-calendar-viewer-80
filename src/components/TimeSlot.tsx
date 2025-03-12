@@ -2,7 +2,6 @@
 import React, { useState } from 'react';
 import { cn } from '@/lib/utils';
 import { formatTime, calculateTimeSlotPosition, getProjectColor, getTextColor } from '@/utils/calendarUtils';
-import { User } from 'lucide-react';
 import type { TimeSlot as TimeSlotType } from '@/utils/calendarUtils';
 import TimeSlotOverlay from './TimeSlotOverlay';
 
@@ -29,9 +28,6 @@ const TimeSlot: React.FC<TimeSlotProps> = ({ slot }) => {
   const width = `calc(${100 / columnCount}% - 4px)`;  // Subtract a bit for spacing
   const left = `calc(${(column * 100) / columnCount}% + 2px)`; // Add a bit of margin
   
-  // Check if this slot has multiple parties and time slots
-  const hasBookingSlots = !slot.isBrokerEvent && slot.parties && slot.duration;
-  
   const handleClick = () => {
     setIsOverlayOpen(true);
   };
@@ -44,8 +40,7 @@ const TimeSlot: React.FC<TimeSlotProps> = ({ slot }) => {
     <>
       <div
         className={cn(
-          'calendar-event absolute animate-scale-in cursor-pointer hover:brightness-95 transition-all',
-          hasBookingSlots && 'has-booking-slots'
+          'calendar-event absolute animate-scale-in cursor-pointer hover:brightness-95 transition-all'
         )}
         style={{ 
           top: `${top}px`, 
@@ -66,19 +61,7 @@ const TimeSlot: React.FC<TimeSlotProps> = ({ slot }) => {
             <div className="text-xs mt-1">
               {formatTime(slot.startTime)} - {formatTime(slot.endTime)}
             </div>
-            {slot.broker && (
-              <div className="flex items-center text-xs mt-1">
-                <User size={12} className="mr-1" />
-                <span className="truncate">{slot.broker}</span>
-              </div>
-            )}
           </div>
-          
-          {hasBookingSlots && (
-            <div className="text-xs mt-1">
-              {Math.floor((timeToMinutes(slot.endTime) - timeToMinutes(slot.startTime)) / slot.duration)} time slots
-            </div>
-          )}
         </div>
       </div>
       
@@ -89,12 +72,6 @@ const TimeSlot: React.FC<TimeSlotProps> = ({ slot }) => {
       />
     </>
   );
-};
-
-// Helper function to convert "HH:mm" to minutes since midnight
-const timeToMinutes = (time: string): number => {
-  const [hours, minutes] = time.split(':').map(Number);
-  return hours * 60 + minutes;
 };
 
 export default TimeSlot;
