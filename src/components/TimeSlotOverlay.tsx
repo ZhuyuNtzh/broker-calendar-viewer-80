@@ -233,5 +233,26 @@ function generateTimeSlots(startTime: string, endTime: string, duration: number,
   for (let i = 0; i < numSlots; i++) {
     const slotStartMinutes = startMinutes + i * duration;
     const slotEndMinutes = slotStartMinutes + duration - 5;
+    
+    const startTimeFormatted = `${Math.floor(slotStartMinutes / 60)}:${(slotStartMinutes % 60).toString().padStart(2, '0')}`;
+    const endTimeFormatted = `${Math.floor(slotEndMinutes / 60)}:${(slotEndMinutes % 60).toString().padStart(2, '0')}`;
+    
+    const timeString = `${formatTime(startTimeFormatted)} to ${formatTime(endTimeFormatted)}`;
+    
+    const slot1Index = Math.floor(Math.random() * names.length);
+    let slot2Index = Math.floor(Math.random() * names.length);
+    while (slot2Index === slot1Index) {
+      slot2Index = Math.floor(Math.random() * names.length);
+    }
+    
+    slots.push({
+      time: timeString,
+      slot1: names[slot1Index],
+      slot2: names[slot2Index]
+    });
+  }
+  
+  return slots;
+}
 
-
+export default TimeSlotOverlay;
