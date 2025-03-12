@@ -23,6 +23,18 @@ interface BookingSlotFormProps {
   }) => void;
 }
 
+// Helper function to generate time options in 30-minute increments
+const generateTimeOptions = () => {
+  const options = [];
+  for (let hour = 6; hour < 21; hour++) {
+    for (let minute of ['00', '30']) {
+      const formattedHour = hour.toString().padStart(2, '0');
+      options.push(`${formattedHour}:${minute}`);
+    }
+  }
+  return options;
+};
+
 const BookingSlotForm: React.FC<BookingSlotFormProps> = ({
   day,
   initialStartTime,
@@ -49,8 +61,7 @@ const BookingSlotForm: React.FC<BookingSlotFormProps> = ({
     onSubmit(formData);
   };
 
-  const formattedStartTime = formatTime(initialStartTime);
-  const formattedEndTime = formatTime(initialEndTime);
+  const timeOptions = generateTimeOptions();
   const formattedDay = day.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
 
   return (
@@ -66,7 +77,7 @@ const BookingSlotForm: React.FC<BookingSlotFormProps> = ({
       </div>
       
       <div className="text-sm text-gray-500 mb-4">
-        {formattedDay} • {formattedStartTime} - {formattedEndTime}
+        {formattedDay}
       </div>
       
       <form onSubmit={handleSubmit} className="space-y-4">
@@ -85,6 +96,44 @@ const BookingSlotForm: React.FC<BookingSlotFormProps> = ({
               ))}
             </SelectContent>
           </Select>
+        </div>
+        
+        <div className="grid grid-cols-2 gap-4">
+          <div className="space-y-2">
+            <Label htmlFor="startTime">Start Time</Label>
+            <Select
+              value={formData.startTime}
+              onValueChange={(value) => handleChange('startTime', value)}
+            >
+              <SelectTrigger id="startTime">
+                <SelectValue placeholder="Select start time" />
+              </SelectTrigger>
+              <SelectContent>
+                {timeOptions.map(time => (
+                  <SelectItem key={`start-${time}`} value={time}>{formatTime(time)}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+          
+          <div className="space-y-2">
+            <Label htmlFor="endTime">End Time</Label>
+            <Select
+              value={formData.endTime}
+              onValueChange={(value) => handleChange('endTime', value)}
+            >
+              <SelectTrigger id="endTime">
+                <SelectValue placeholder="Select end time" />
+              </SelectTrigger>
+              <SelectContent>
+                {timeOptions
+                  .filter(time => time > formData.startTime)
+                  .map(time => (
+                    <SelectItem key={`end-${time}`} value={time}>{formatTime(time)}</SelectItem>
+                  ))}
+              </SelectContent>
+            </Select>
+          </div>
         </div>
         
         <div className="grid grid-cols-2 gap-4">
