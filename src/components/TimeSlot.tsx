@@ -26,7 +26,7 @@ const TimeSlot: React.FC<TimeSlotProps> = ({ slot }) => {
   const columnCount = slot.columnCount || 1;
   const column = slot.column || 0;
   
-  // Calculate width as a percentage based on columnCount
+  // Calculate width as a percentage to evenly divide the day column
   const width = `${100 / columnCount}%`;
   
   // Calculate left position based on column
