@@ -1,14 +1,16 @@
+
 import React, { useState, useMemo } from 'react';
 import CalendarHeader from '@/components/CalendarHeader';
 import WeeklyCalendar from '@/components/WeeklyCalendar';
 import { addWeeks, subWeeks } from 'date-fns';
 import { generateMockTimeSlots } from '@/data/mockData';
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { RadioGroup } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
 import { User, Calendar as CalendarIcon } from 'lucide-react';
 import type { TimeSlot } from '@/utils/calendarUtils';
 import { getProjectColor } from '@/utils/calendarUtils';
+import { PropertyRadioItem } from '@/components/PropertyRadioItem';
 
 const Index = () => {
   const [currentDate, setCurrentDate] = useState(new Date());
@@ -108,12 +110,15 @@ const Index = () => {
                 className="space-y-3 max-h-[400px] overflow-y-auto pr-2"
               >
                 <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="ALL" id="project-all" />
+                  <PropertyRadioItem 
+                    value="ALL" 
+                    id="project-all" 
+                    color="#ccc"
+                  />
                   <Label 
                     htmlFor="project-all"
-                    className="text-sm cursor-pointer font-medium flex items-center"
+                    className="text-sm cursor-pointer font-medium"
                   >
-                    <span className="border border-gray-300 w-3 h-3 rounded-full mr-2"></span>
                     ALL Properties
                   </Label>
                 </div>
@@ -126,18 +131,15 @@ const Index = () => {
                   return (
                     <div key={projectName} className="flex flex-col">
                       <div className="flex items-center space-x-2">
-                        <RadioGroupItem 
+                        <PropertyRadioItem 
                           value={projectName} 
                           id={`project-${projectName}`} 
+                          color={projectColor}
                         />
                         <Label 
                           htmlFor={`project-${projectName}`}
-                          className="text-sm cursor-pointer font-medium flex items-center"
+                          className="text-sm cursor-pointer font-medium"
                         >
-                          <span 
-                            className="w-3 h-3 rounded-full mr-2 inline-block" 
-                            style={{ backgroundColor: projectColor }}
-                          ></span>
                           {projectName}
                         </Label>
                       </div>
