@@ -6,7 +6,7 @@ import TimeSlotOverlay from './TimeSlotOverlay';
 
 interface TimeSlotProps {
   slot: TimeSlot;
-  allTimeSlots?: TimeSlot[]; // Added to pass all time slots
+  allTimeSlots?: TimeSlot[];
 }
 
 const TimeSlotComponent: React.FC<TimeSlotProps> = ({ slot, allTimeSlots = [] }) => {
@@ -14,8 +14,9 @@ const TimeSlotComponent: React.FC<TimeSlotProps> = ({ slot, allTimeSlots = [] })
   
   const { top, height } = calculateTimeSlotPosition(slot.startTime, slot.endTime);
   
-  // Get color based on project and event type
-  const bgColor = getProjectColor(slot.projectName, slot.isBrokerEvent);
+  // Get color based on project and event type, taking into account the associated project for broker events
+  const projectName = slot.isBrokerEvent ? slot.associatedProject || slot.projectName : slot.projectName;
+  const bgColor = getProjectColor(projectName, slot.isBrokerEvent);
   const textColor = getTextColor(bgColor);
   
   // Calculate width based on column information (for overlapping events)
@@ -44,7 +45,6 @@ const TimeSlotComponent: React.FC<TimeSlotProps> = ({ slot, allTimeSlots = [] })
         <div className="truncate">
           {formatTime(slot.startTime)} - {formatTime(slot.endTime)}
         </div>
-        {/* Render broker name for broker events */}
         {slot.isBrokerEvent && slot.broker && (
           <div className="text-[10px] mt-0.5 opacity-80 truncate">
             {slot.broker}
