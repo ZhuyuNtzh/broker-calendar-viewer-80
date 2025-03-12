@@ -26,11 +26,11 @@ const TimeSlot: React.FC<TimeSlotProps> = ({ slot }) => {
   const columnCount = slot.columnCount || 1;
   const column = slot.column || 0;
   
-  // Calculate width as a percentage (minus small gap)
-  const width = `calc(${100 / columnCount}% - 4px)`;
+  // Calculate width as a percentage based on columnCount
+  const width = `${100 / columnCount}%`;
   
-  // Calculate left position
-  const left = `calc(${(column * 100) / columnCount}% + 2px)`;
+  // Calculate left position based on column
+  const left = `${(column * 100) / columnCount}%`;
   
   // Check if this slot has multiple parties and time slots
   const hasBookingSlots = !slot.isBrokerEvent && slot.parties && slot.duration;
@@ -52,7 +52,6 @@ const TimeSlot: React.FC<TimeSlotProps> = ({ slot }) => {
           height: `${height}px`,
           width,
           left,
-          maxWidth: 'calc(100% - 4px)' // Ensure it doesn't overflow the cell
         }}
         onClick={handleClick}
       >
