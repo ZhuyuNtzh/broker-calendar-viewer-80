@@ -109,7 +109,7 @@ const TimeSlotOverlay: React.FC<TimeSlotOverlayProps> = ({ slot, isOpen, onClose
               <Separator className="my-4" />
               <div className="space-y-3">
                 <div className="font-medium">Time Slots</div>
-                <div className="space-y-2 max-h-60 overflow-y-auto pr-1">
+                <div className="space-y-2">
                   {timeSlots.map((timeSlot, index) => (
                     <div key={index} className="bg-gray-50 p-3 rounded-md">
                       <div className="text-sm font-medium text-gray-700 mb-2">{timeSlot.time}</div>
