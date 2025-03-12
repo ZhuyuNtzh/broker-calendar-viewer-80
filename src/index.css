@@ -1,4 +1,3 @@
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -122,34 +121,6 @@
   z-index: 2;
   box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15);
   transform: translateY(-1px) scale(1.01);
-}
-
-.calendar-event.booked {
-  background-color: #1e40af; /* Dark blue */
-  color: white;
-}
-
-.calendar-event.booked:hover {
-  background-color: #1e3a8a; /* Slightly darker blue on hover */
-}
-
-.calendar-event.available {
-  background-color: #1e40af; /* Same dark blue as booked */
-  color: white;
-}
-
-.calendar-event.available:hover {
-  background-color: #1e3a8a; /* Same hover color as booked */
-}
-
-.calendar-event.broker-event {
-  background-color: #f3e8ff; /* Light purple */
-  border-left: 3px solid #a855f7; /* Medium purple border */
-  color: #4b5563; /* Gray text for contrast */
-}
-
-.calendar-event.broker-event:hover {
-  background-color: #ede9fe; /* Slightly different light purple on hover */
 }
 
 .calendar-fade-enter {

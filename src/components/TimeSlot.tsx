@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
 import { cn } from '@/lib/utils';
-import { formatTime, calculateTimeSlotPosition } from '@/utils/calendarUtils';
+import { formatTime, calculateTimeSlotPosition, getProjectColor, getTextColor } from '@/utils/calendarUtils';
 import { User } from 'lucide-react';
 import type { TimeSlot as TimeSlotType } from '@/utils/calendarUtils';
 import TimeSlotOverlay from './TimeSlotOverlay';
@@ -14,13 +14,9 @@ const TimeSlot: React.FC<TimeSlotProps> = ({ slot }) => {
   const [isOverlayOpen, setIsOverlayOpen] = useState(false);
   const { top, height } = calculateTimeSlotPosition(slot.startTime, slot.endTime);
   
-  // Determine status class
-  let statusClass = '';
-  if (slot.isBrokerEvent) {
-    statusClass = 'broker-event';
-  } else {
-    statusClass = slot.isBooked ? 'booked' : 'available';
-  }
+  // Get dynamic color based on project name
+  const backgroundColor = getProjectColor(slot.projectName, slot.isBrokerEvent);
+  const textColor = slot.isBrokerEvent ? '#4b5563' : 'white';
   
   // Calculate width and position for overlapping events
   const columnCount = slot.columnCount || 1;
@@ -37,12 +33,15 @@ const TimeSlot: React.FC<TimeSlotProps> = ({ slot }) => {
     setIsOverlayOpen(true);
   };
   
+  // Determine border style for broker events
+  const borderStyle = slot.isBrokerEvent ? 
+    { borderLeft: `3px solid ${getProjectColor(slot.projectName, false)}` } : {};
+  
   return (
     <>
       <div
         className={cn(
           'calendar-event absolute animate-scale-in cursor-pointer hover:brightness-95 transition-all',
-          statusClass,
           hasBookingSlots && 'has-booking-slots'
         )}
         style={{ 
@@ -50,27 +49,22 @@ const TimeSlot: React.FC<TimeSlotProps> = ({ slot }) => {
           height: `${height}px`,
           width,
           left,
+          backgroundColor,
+          color: textColor,
+          ...borderStyle
         }}
         onClick={handleClick}
       >
         <div className="p-2 h-full flex flex-col justify-between overflow-hidden">
           <div>
-            <h4 className={cn(
-              "font-medium text-sm truncate",
-            )}>
+            <h4 className="font-medium text-sm truncate">
               {slot.projectName}
             </h4>
-            <div className={cn(
-              "text-xs mt-1",
-              slot.isBrokerEvent ? "text-gray-600" : "text-white/90"
-            )}>
+            <div className="text-xs mt-1">
               {formatTime(slot.startTime)} - {formatTime(slot.endTime)}
             </div>
             {slot.broker && (
-              <div className={cn(
-                "flex items-center text-xs mt-1",
-                slot.isBrokerEvent ? "text-gray-600" : "text-white/90"
-              )}>
+              <div className="flex items-center text-xs mt-1">
                 <User size={12} className="mr-1" />
                 <span className="truncate">{slot.broker}</span>
               </div>
@@ -78,7 +72,7 @@ const TimeSlot: React.FC<TimeSlotProps> = ({ slot }) => {
           </div>
           
           {hasBookingSlots && (
-            <div className="text-xs text-white/90 mt-1">
+            <div className="text-xs mt-1">
               {Math.floor((timeToMinutes(slot.endTime) - timeToMinutes(slot.startTime)) / slot.duration)} time slots
             </div>
           )}

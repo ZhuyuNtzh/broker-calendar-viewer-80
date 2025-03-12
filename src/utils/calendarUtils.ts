@@ -1,5 +1,39 @@
-
 import { addDays, format, startOfWeek, parse, isToday } from 'date-fns';
+
+// Property color mapping - predefined vibrant colors
+const PROJECT_COLORS = [
+  { main: '#2563eb', light: '#dbeafe' }, // Blue
+  { main: '#d946ef', light: '#f5d0fe' }, // Magenta
+  { main: '#f97316', light: '#ffedd5' }, // Orange
+  { main: '#10b981', light: '#d1fae5' }, // Emerald
+  { main: '#8b5cf6', light: '#ede9fe' }, // Purple
+  { main: '#f43f5e', light: '#fee2e2' }, // Rose
+  { main: '#0ea5e9', light: '#e0f2fe' }, // Sky
+  { main: '#84cc16', light: '#ecfccb' }, // Lime
+  { main: '#eab308', light: '#fef9c3' }, // Yellow
+  { main: '#14b8a6', light: '#ccfbf1' }, // Teal
+];
+
+// Map to keep track of assigned colors
+const projectColorMap = new Map<string, { main: string, light: string }>();
+
+// Get color for a project (generates a consistent color for each project name)
+export const getProjectColor = (projectName: string, isBrokerEvent: boolean = false): string => {
+  if (!projectColorMap.has(projectName)) {
+    // Assign the next color in the list
+    const colorIndex = projectColorMap.size % PROJECT_COLORS.length;
+    projectColorMap.set(projectName, PROJECT_COLORS[colorIndex]);
+  }
+  
+  const colors = projectColorMap.get(projectName);
+  return isBrokerEvent ? colors!.light : colors!.main;
+};
+
+// Get text color (white for dark backgrounds, dark for light backgrounds)
+export const getTextColor = (backgroundColor: string): string => {
+  // Simple heuristic: if it's a light color (likely a broker event), use dark text
+  return backgroundColor.includes('light') || backgroundColor.startsWith('#f') || backgroundColor.startsWith('#e') || backgroundColor.startsWith('#d') ? '#4b5563' : 'white';
+};
 
 export type TimeSlot = {
   id: string;
@@ -92,7 +126,7 @@ const doSlotsOverlap = (slot1: TimeSlot, slot2: TimeSlot): boolean => {
   return (slot1Start < slot2End && slot1End > slot2Start);
 };
 
-// New function to organize time slots by calculating overlaps
+// Organize time slots by calculating overlaps
 export const organizeTimeSlots = (slots: TimeSlot[]): TimeSlot[] => {
   if (!slots.length) return [];
   
