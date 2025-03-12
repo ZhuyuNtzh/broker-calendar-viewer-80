@@ -75,6 +75,23 @@ export const getUniqueId = (): string => {
   return Math.random().toString(36).substr(2, 9);
 };
 
+// Helper function to convert "HH:mm" time string to minutes
+const timeToMinutes = (time: string): number => {
+  const [hours, minutes] = time.split(':').map(Number);
+  return hours * 60 + minutes;
+};
+
+// Function to check if two time slots overlap
+const doSlotsOverlap = (slot1: TimeSlot, slot2: TimeSlot): boolean => {
+  const slot1Start = timeToMinutes(slot1.startTime);
+  const slot1End = timeToMinutes(slot1.endTime);
+  const slot2Start = timeToMinutes(slot2.startTime);
+  const slot2End = timeToMinutes(slot2.endTime);
+  
+  // Two events overlap if one starts before the other ends and ends after the other starts
+  return (slot1Start < slot2End && slot1End > slot2Start);
+};
+
 // New function to organize time slots by calculating overlaps
 export const organizeTimeSlots = (slots: TimeSlot[]): TimeSlot[] => {
   if (!slots.length) return [];
@@ -85,7 +102,7 @@ export const organizeTimeSlots = (slots: TimeSlot[]): TimeSlot[] => {
     if (!slotsByDay[slot.day]) {
       slotsByDay[slot.day] = [];
     }
-    slotsByDay[slot.day].push(slot);
+    slotsByDay[slot.day].push({...slot});
   });
   
   // Process each day's slots
@@ -110,112 +127,107 @@ export const organizeTimeSlots = (slots: TimeSlot[]): TimeSlot[] => {
       return (aEnd - aStart) - (bEnd - bStart);
     });
     
-    // Find overlapping slots and assign columns
-    assignColumns(daySlots);
+    // Find overlapping slots and assign columns using a more robust algorithm
+    assignColumnsImproved(daySlots);
   });
   
   // Flatten the grouped slots back to a single array
   return Object.values(slotsByDay).flat();
 };
 
-// Helper function to convert "HH:mm" time string to minutes
-const timeToMinutes = (time: string): number => {
-  const [hours, minutes] = time.split(':').map(Number);
-  return hours * 60 + minutes;
-};
-
-// Function to check if two time slots overlap
-const doSlotsOverlap = (slot1: TimeSlot, slot2: TimeSlot): boolean => {
-  const slot1Start = timeToMinutes(slot1.startTime);
-  const slot1End = timeToMinutes(slot1.endTime);
-  const slot2Start = timeToMinutes(slot2.startTime);
-  const slot2End = timeToMinutes(slot2.endTime);
-  
-  // Two events overlap if one starts before the other ends and ends after the other starts
-  return (slot1Start < slot2End && slot1End > slot2Start);
-};
-
-// Function to assign columns to overlapping slots
-const assignColumns = (slots: TimeSlot[]): void => {
+// Improved algorithm for assigning columns to events
+const assignColumnsImproved = (slots: TimeSlot[]): void => {
   if (!slots.length) return;
   
-  // Create groups of overlapping events
-  const groups: TimeSlot[][] = [];
+  // Create a map to track time periods and their occupied columns
+  const timeSlices: { start: number, end: number, occupiedColumns: Set<number> }[] = [];
   
-  slots.forEach(slot => {
-    // Try to find a group where this slot doesn't overlap with any slot
-    let foundGroup = false;
+  // For each slot
+  for (const slot of slots) {
+    const slotStart = timeToMinutes(slot.startTime);
+    const slotEnd = timeToMinutes(slot.endTime);
     
-    for (const group of groups) {
-      // Check if the current slot overlaps with any slot in this group
-      const hasOverlap = group.some(existingSlot => doSlotsOverlap(slot, existingSlot));
-      
-      if (!hasOverlap) {
-        // If no overlap, add to this group
-        group.push(slot);
-        foundGroup = true;
-        break;
-      }
-    }
-    
-    // If no suitable group found, create a new group
-    if (!foundGroup) {
-      groups.push([slot]);
-    }
-  });
-  
-  // For each slot, determine its column and the total columns needed
-  const slotToColumnMap = new Map<string, { column: number, totalColumns: number }>();
-  
-  slots.forEach(slot => {
-    // Find all slots that overlap with this one
-    const overlappingSlots = slots.filter(otherSlot => 
-      slot.id !== otherSlot.id && doSlotsOverlap(slot, otherSlot)
+    // Find all time slices that overlap with this slot
+    const overlappingSlices = timeSlices.filter(
+      slice => slotStart < slice.end && slotEnd > slice.start
     );
     
-    // If there are overlapping slots, assign columns
-    if (overlappingSlots.length > 0) {
-      // Find the max column among overlapping slots
-      const usedColumns = new Set<number>();
+    // Find the first available column across all overlapping time slices
+    let column = 0;
+    let columnFound = false;
+    
+    while (!columnFound) {
+      columnFound = true;
       
-      overlappingSlots.forEach(overlapSlot => {
-        const info = slotToColumnMap.get(overlapSlot.id);
-        if (info) {
-          usedColumns.add(info.column);
+      for (const slice of overlappingSlices) {
+        if (slice.occupiedColumns.has(column)) {
+          columnFound = false;
+          column++;
+          break;
         }
+      }
+    }
+    
+    // Assign the column to this slot
+    slot.column = column;
+    
+    // Create or update time slices for this slot
+    if (overlappingSlices.length === 0) {
+      // No overlap, create a new time slice
+      timeSlices.push({
+        start: slotStart,
+        end: slotEnd,
+        occupiedColumns: new Set([column])
       });
+    } else {
+      // Update existing time slices and create new ones if needed
+      const sortedSlices = [...overlappingSlices].sort((a, b) => a.start - b.start);
       
-      // Find the first available column
-      let column = 0;
-      while (usedColumns.has(column)) {
-        column++;
+      // Check if we need to create a slice before the first overlapping slice
+      if (slotStart < sortedSlices[0].start) {
+        timeSlices.push({
+          start: slotStart,
+          end: sortedSlices[0].start,
+          occupiedColumns: new Set([column])
+        });
       }
       
-      // Calculate the total columns needed for this group
-      const totalColumns = Math.max(
-        ...Array.from(slotToColumnMap.values())
-          .filter(info => overlappingSlots.some(s => slotToColumnMap.get(s.id)?.totalColumns === info.totalColumns))
-          .map(info => info.totalColumns),
-        column + 1
-      );
+      // Update existing slices and create slices between them
+      for (let i = 0; i < sortedSlices.length; i++) {
+        // Update this slice
+        sortedSlices[i].occupiedColumns.add(column);
+        
+        // Create a slice between this and the next if needed
+        if (i < sortedSlices.length - 1 && sortedSlices[i].end < sortedSlices[i + 1].start) {
+          timeSlices.push({
+            start: sortedSlices[i].end,
+            end: sortedSlices[i + 1].start,
+            occupiedColumns: new Set([column])
+          });
+        }
+      }
       
-      // Store the column info
-      slotToColumnMap.set(slot.id, { column, totalColumns });
-    } else {
-      // If no overlaps, use column 0 with total columns of 1
-      slotToColumnMap.set(slot.id, { column: 0, totalColumns: 1 });
+      // Check if we need to create a slice after the last overlapping slice
+      const lastSlice = sortedSlices[sortedSlices.length - 1];
+      if (slotEnd > lastSlice.end) {
+        timeSlices.push({
+          start: lastSlice.end,
+          end: slotEnd,
+          occupiedColumns: new Set([column])
+        });
+      }
     }
-  });
+  }
   
-  // Update slots with column information
-  slots.forEach(slot => {
-    const info = slotToColumnMap.get(slot.id);
-    if (info) {
-      slot.column = info.column;
-      slot.columnCount = info.totalColumns;
-    } else {
-      slot.column = 0;
-      slot.columnCount = 1;
-    }
-  });
+  // Find the maximum column number used
+  let maxColumn = 0;
+  for (const slot of slots) {
+    maxColumn = Math.max(maxColumn, slot.column || 0);
+  }
+  
+  // Set columnCount for all slots
+  const columnCount = maxColumn + 1;
+  for (const slot of slots) {
+    slot.columnCount = columnCount;
+  }
 };

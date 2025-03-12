@@ -22,15 +22,13 @@ const TimeSlot: React.FC<TimeSlotProps> = ({ slot }) => {
     statusClass = slot.isBooked ? 'booked' : 'available';
   }
   
-  // Calculate width and left position based on column information
+  // Calculate width and position for overlapping events
   const columnCount = slot.columnCount || 1;
   const column = slot.column || 0;
   
-  // Calculate width as a percentage to evenly divide the day column
-  const width = `${100 / columnCount}%`;
-  
-  // Calculate left position based on column
-  const left = `${(column * 100) / columnCount}%`;
+  // Calculate width and left position as percentages
+  const width = `calc(${100 / columnCount}% - 4px)`;  // Subtract a bit for spacing
+  const left = `calc(${(column * 100) / columnCount}% + 2px)`; // Add a bit of margin
   
   // Check if this slot has multiple parties and time slots
   const hasBookingSlots = !slot.isBrokerEvent && slot.parties && slot.duration;
@@ -43,7 +41,7 @@ const TimeSlot: React.FC<TimeSlotProps> = ({ slot }) => {
     <>
       <div
         className={cn(
-          'calendar-event animate-scale-in cursor-pointer hover:brightness-95 transition-all',
+          'calendar-event absolute animate-scale-in cursor-pointer hover:brightness-95 transition-all',
           statusClass,
           hasBookingSlots && 'has-booking-slots'
         )}
