@@ -1,4 +1,3 @@
-
 import React, { useState, useMemo } from 'react';
 import CalendarHeader from '@/components/CalendarHeader';
 import WeeklyCalendar from '@/components/WeeklyCalendar';
@@ -30,7 +29,6 @@ const Index = () => {
     return Array.from(projectBrokerMap.keys());
   }, [projectBrokerMap]);
   
-  // Create a reverse lookup map: broker name -> associated project
   const brokerProjectMap = useMemo(() => {
     const map = new Map<string, string>();
     projectBrokerMap.forEach((broker, project) => {
@@ -40,20 +38,15 @@ const Index = () => {
   }, [projectBrokerMap]);
   
   const filteredTimeSlots = useMemo(() => {
-    // First, filter the time slots based on the selected project
     const filtered = allTimeSlots.filter(slot => {
       if (selectedProject === "ALL") {
-        // Show only property events, no broker events
         return !slot.isBrokerEvent;
       }
       
-      // For specific property, show both property events for that property
-      // and the related broker's personal events
       if (!slot.isBrokerEvent) {
         return slot.projectName === selectedProject;
       }
       
-      // Show broker events if they match the selected property's broker
       if (slot.isBrokerEvent && slot.broker) {
         return projectBrokerMap.get(selectedProject) === slot.broker;
       }
@@ -61,13 +54,11 @@ const Index = () => {
       return false;
     });
     
-    // Now process the slots to add associatedProject for broker events
     return filtered.map(slot => {
       if (slot.isBrokerEvent && slot.broker) {
-        // For broker events, find which property they're associated with
         const associatedProject = selectedProject !== "ALL" 
-          ? selectedProject // If we've already selected a project, use that
-          : brokerProjectMap.get(slot.broker); // Otherwise look up from the map
+          ? selectedProject
+          : brokerProjectMap.get(slot.broker);
           
         if (associatedProject) {
           return { ...slot, associatedProject };
@@ -118,11 +109,11 @@ const Index = () => {
               >
                 <div className="flex items-center space-x-2">
                   <RadioGroupItem value="ALL" id="project-all" />
-                  <div className="w-4 h-4 rounded-full border border-gray-300"></div>
                   <Label 
                     htmlFor="project-all"
-                    className="text-sm cursor-pointer font-medium"
+                    className="text-sm cursor-pointer font-medium flex items-center"
                   >
+                    <span className="border border-gray-300 w-3 h-3 rounded-full mr-2"></span>
                     ALL Properties
                   </Label>
                 </div>
@@ -139,14 +130,14 @@ const Index = () => {
                           value={projectName} 
                           id={`project-${projectName}`} 
                         />
-                        <div 
-                          className="w-4 h-4 rounded-full border border-gray-200" 
-                          style={{ backgroundColor: projectColor }}
-                        ></div>
                         <Label 
                           htmlFor={`project-${projectName}`}
-                          className="text-sm cursor-pointer font-medium"
+                          className="text-sm cursor-pointer font-medium flex items-center"
                         >
+                          <span 
+                            className="w-3 h-3 rounded-full mr-2 inline-block" 
+                            style={{ backgroundColor: projectColor }}
+                          ></span>
                           {projectName}
                         </Label>
                       </div>
