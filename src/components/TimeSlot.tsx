@@ -23,11 +23,14 @@ const TimeSlotComponent: React.FC<TimeSlotProps> = ({ slot, allTimeSlots = [] })
   const width = slot.columnCount ? `${100 / slot.columnCount}%` : '100%';
   const left = slot.column ? `${(slot.column * 100) / slot.columnCount!}%` : '0';
   
+  const handleOpen = () => setShowDetails(true);
+  const handleClose = () => setShowDetails(false);
+  
   return (
     <>
       <div
         className={cn(
-          "absolute rounded-md px-2 py-1 text-xs font-medium flex flex-col justify-start overflow-hidden",
+          "absolute rounded-md px-2 py-1 text-xs font-medium flex flex-col justify-start overflow-hidden cursor-pointer hover:brightness-95 transition-all",
           slot.isBooked ? "border" : ""
         )}
         style={{
@@ -39,7 +42,7 @@ const TimeSlotComponent: React.FC<TimeSlotProps> = ({ slot, allTimeSlots = [] })
           color: textColor,
           borderColor: slot.isBooked ? (slot.isBrokerEvent ? 'transparent' : 'rgba(0,0,0,0.1)') : 'transparent',
         }}
-        onClick={() => setShowDetails(true)}
+        onClick={handleOpen}
       >
         <div className="font-semibold truncate">{slot.projectName}</div>
         <div className="truncate">
@@ -52,12 +55,15 @@ const TimeSlotComponent: React.FC<TimeSlotProps> = ({ slot, allTimeSlots = [] })
         )}
       </div>
       
-      <TimeSlotOverlay 
-        slot={slot} 
-        isOpen={showDetails}
-        onClose={() => setShowDetails(false)}
-        allTimeSlots={allTimeSlots}
-      />
+      {/* Only render overlay when shown */}
+      {showDetails && (
+        <TimeSlotOverlay 
+          slot={slot} 
+          isOpen={showDetails}
+          onClose={handleClose}
+          allTimeSlots={allTimeSlots}
+        />
+      )}
     </>
   );
 };

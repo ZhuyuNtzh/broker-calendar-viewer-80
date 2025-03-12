@@ -33,7 +33,7 @@ const TimeSlotOverlay: React.FC<TimeSlotOverlayProps> = ({
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, [isOpen, onClose]);
 
-  if (!slot) return null;
+  if (!isOpen || !slot) return null;
 
   const today = new Date();
   const mockDate = today;
@@ -96,19 +96,14 @@ const TimeSlotOverlay: React.FC<TimeSlotOverlayProps> = ({
   return (
     <>
       <div 
-        className={cn(
-          "fixed inset-0 bg-black/30 backdrop-blur-[2px] transition-opacity duration-300",
-          isOpen ? "opacity-100" : "opacity-0 pointer-events-none"
-        )}
+        className="fixed inset-0 bg-black/30 backdrop-blur-[2px] z-40"
         aria-hidden="true"
+        onClick={onClose}
       />
       
       <div 
         ref={panelRef}
-        className={cn(
-          "fixed top-0 right-0 h-full bg-white dark:bg-gray-900 shadow-2xl z-50 w-full max-w-md transition-transform duration-300 ease-out transform border-l dark:border-gray-800",
-          isOpen ? "translate-x-0" : "translate-x-full"
-        )}
+        className="fixed top-0 right-0 h-full bg-white dark:bg-gray-900 shadow-2xl z-50 w-full max-w-md transform border-l dark:border-gray-800"
       >
         <div className="flex flex-col h-full">
           <div className="border-b p-4 bg-gray-50/80 dark:bg-gray-900/80 backdrop-blur supports-[backdrop-filter]:bg-gray-50/80">
