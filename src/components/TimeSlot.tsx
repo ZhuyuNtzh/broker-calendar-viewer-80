@@ -11,7 +11,7 @@ interface TimeSlotProps {
 }
 
 const TimeSlotComponent: React.FC<TimeSlotProps> = ({ slot, allTimeSlots = [] }) => {
-  const { activeSlotId, setActiveSlotId, isSlotActive } = useTimeSlot();
+  const { activeSlotId, setActiveSlotId, isSlotActive, lastClickTime } = useTimeSlot();
   
   const { top, height } = calculateTimeSlotPosition(slot.startTime, slot.endTime);
   
@@ -33,8 +33,15 @@ const TimeSlotComponent: React.FC<TimeSlotProps> = ({ slot, allTimeSlots = [] })
     };
   }, [slot.id, isSlotActive, setActiveSlotId]);
   
-  // Handle click to always set this slot as active (not toggle)
-  const handleClick = () => {
+  // Handle click to always set this slot as active
+  const handleClick = (e: React.MouseEvent) => {
+    e.stopPropagation(); // Prevent event bubbling
+    
+    const now = Date.now();
+    // Ensure we don't have double-click issues causing the panel to close
+    lastClickTime.current = now;
+    
+    // Always set this slot as active, replacing any other active slot
     setActiveSlotId(slot.id);
   };
   
