@@ -15,7 +15,10 @@ const TimeSlotComponent: React.FC<TimeSlotProps> = ({ slot, allTimeSlots = [] })
   const { top, height } = calculateTimeSlotPosition(slot.startTime, slot.endTime);
   
   // Get color based on project and event type
-  const bgColor = getProjectColor(slot.projectName, slot.isBrokerEvent);
+  const bgColor = slot.isBrokerEvent && slot.associatedProject
+    ? getProjectColor(slot.associatedProject, true) // Use the light variant for broker events
+    : getProjectColor(slot.projectName, slot.isBrokerEvent);
+    
   const textColor = getTextColor(bgColor);
   
   // Calculate width based on column information (for overlapping events)
