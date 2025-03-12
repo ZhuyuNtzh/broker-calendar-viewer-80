@@ -33,9 +33,9 @@ const TimeSlotComponent: React.FC<TimeSlotProps> = ({ slot, allTimeSlots = [] })
     };
   }, [slot.id, isSlotActive, setActiveSlotId]);
   
-  // Handle click to toggle the panel
+  // Handle click to always set this slot as active (not toggle)
   const handleClick = () => {
-    setActiveSlotId(isSlotActive(slot.id) ? null : slot.id);
+    setActiveSlotId(slot.id);
   };
   
   return (
