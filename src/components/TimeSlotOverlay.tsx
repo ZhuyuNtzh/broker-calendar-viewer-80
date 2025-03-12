@@ -1,10 +1,10 @@
-import React from 'react';
+import React, { useRef, useEffect } from 'react';
 import { X, MapPin, Clock, Calendar, User, ExternalLink, CalendarClock } from 'lucide-react';
 import { formatTime } from '@/utils/calendarUtils';
 import { Separator } from '@/components/ui/separator';
 import { Button } from '@/components/ui/button';
 import type { TimeSlot } from '@/utils/calendarUtils';
-import { format, addDays, isSameDay, isBefore, isAfter, isWithinInterval } from 'date-fns';
+import { format, isSameDay, isAfter } from 'date-fns';
 import { cn } from '@/lib/utils';
 
 interface TimeSlotOverlayProps {
@@ -20,11 +20,23 @@ const TimeSlotOverlay: React.FC<TimeSlotOverlayProps> = ({
   onClose, 
   allTimeSlots = [] 
 }) => {
+  const panelRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (isOpen && panelRef.current && !panelRef.current.contains(event.target as Node)) {
+        onClose();
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [isOpen, onClose]);
+
   if (!slot) return null;
 
   const today = new Date();
   const mockDate = today;
-
   const zipcode = "10001";
 
   const mockTimeSlots = [
@@ -85,35 +97,36 @@ const TimeSlotOverlay: React.FC<TimeSlotOverlayProps> = ({
     <>
       <div 
         className={cn(
-          "fixed inset-0 bg-black/50 z-40 md:hidden transition-opacity duration-300",
+          "fixed inset-0 bg-black/30 backdrop-blur-[2px] transition-opacity duration-300",
           isOpen ? "opacity-100" : "opacity-0 pointer-events-none"
         )}
-        onClick={onClose}
+        aria-hidden="true"
       />
       
       <div 
+        ref={panelRef}
         className={cn(
-          "fixed top-0 right-0 h-full bg-white shadow-lg z-50 w-full max-w-md transition-transform duration-300 ease-in-out transform",
+          "fixed top-0 right-0 h-full bg-white dark:bg-gray-900 shadow-2xl z-50 w-full max-w-md transition-transform duration-300 ease-out transform border-l dark:border-gray-800",
           isOpen ? "translate-x-0" : "translate-x-full"
         )}
       >
         <div className="flex flex-col h-full">
-          <div className="border-b p-4">
+          <div className="border-b p-4 bg-gray-50/80 dark:bg-gray-900/80 backdrop-blur supports-[backdrop-filter]:bg-gray-50/80">
             <div className="flex items-center justify-between mb-2">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center">
-                  <Calendar className="h-5 w-5 text-gray-600" />
+                <div className="w-10 h-10 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center">
+                  <Calendar className="h-5 w-5 text-gray-600 dark:text-gray-400" />
                 </div>
                 <h2 className="text-xl font-semibold">{slot.projectName}</h2>
               </div>
               <button 
-                className="rounded-full p-1.5 hover:bg-gray-100 transition-colors"
+                className="rounded-full p-1.5 hover:bg-gray-200 dark:hover:bg-gray-800 transition-colors"
                 onClick={onClose}
               >
                 <X className="h-5 w-5" />
               </button>
             </div>
-            <p className="text-gray-500 text-sm ml-[52px]">
+            <p className="text-gray-500 dark:text-gray-400 text-sm ml-[52px]">
               {slot.location || "No description provided"}
             </p>
           </div>
