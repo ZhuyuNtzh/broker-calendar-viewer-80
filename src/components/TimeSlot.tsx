@@ -1,8 +1,9 @@
 
-import React, { useState } from 'react';
+import React, { useEffect } from 'react';
 import { cn } from '@/lib/utils';
 import { calculateTimeSlotPosition, formatTime, getProjectColor, getTextColor, type TimeSlot } from '@/utils/calendarUtils';
 import TimeSlotOverlay from './TimeSlotOverlay';
+import { useTimeSlot } from '@/contexts/TimeSlotContext';
 
 interface TimeSlotProps {
   slot: TimeSlot;
@@ -10,7 +11,7 @@ interface TimeSlotProps {
 }
 
 const TimeSlotComponent: React.FC<TimeSlotProps> = ({ slot, allTimeSlots = [] }) => {
-  const [showDetails, setShowDetails] = useState<boolean>(false);
+  const { activeSlotId, setActiveSlotId, isSlotActive } = useTimeSlot();
   
   const { top, height } = calculateTimeSlotPosition(slot.startTime, slot.endTime);
   
@@ -22,6 +23,20 @@ const TimeSlotComponent: React.FC<TimeSlotProps> = ({ slot, allTimeSlots = [] })
   // Calculate width based on column information (for overlapping events)
   const width = slot.columnCount ? `${100 / slot.columnCount}%` : '100%';
   const left = slot.column ? `${(slot.column * 100) / slot.columnCount!}%` : '0';
+  
+  // Clean up effect - if this time slot is unmounted while active, clear the active slot
+  useEffect(() => {
+    return () => {
+      if (isSlotActive(slot.id)) {
+        setActiveSlotId(null);
+      }
+    };
+  }, [slot.id, isSlotActive, setActiveSlotId]);
+  
+  // Handle click to toggle the panel
+  const handleClick = () => {
+    setActiveSlotId(isSlotActive(slot.id) ? null : slot.id);
+  };
   
   return (
     <>
@@ -39,7 +54,7 @@ const TimeSlotComponent: React.FC<TimeSlotProps> = ({ slot, allTimeSlots = [] })
           color: textColor,
           borderColor: slot.isBooked ? (slot.isBrokerEvent ? 'transparent' : 'rgba(0,0,0,0.1)') : 'transparent',
         }}
-        onClick={() => setShowDetails(true)}
+        onClick={handleClick}
       >
         <div className="font-semibold truncate">{slot.projectName}</div>
         <div className="truncate">
@@ -54,8 +69,8 @@ const TimeSlotComponent: React.FC<TimeSlotProps> = ({ slot, allTimeSlots = [] })
       
       <TimeSlotOverlay 
         slot={slot} 
-        isOpen={showDetails}
-        onClose={() => setShowDetails(false)}
+        isOpen={isSlotActive(slot.id)}
+        onClose={() => setActiveSlotId(null)}
         allTimeSlots={allTimeSlots}
       />
     </>
