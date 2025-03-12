@@ -9,6 +9,7 @@ import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
 import { User, Calendar as CalendarIcon } from 'lucide-react';
 import type { TimeSlot } from '@/utils/calendarUtils';
+import { getProjectColor } from '@/utils/calendarUtils';
 
 const Index = () => {
   const [currentDate, setCurrentDate] = useState(new Date());
@@ -117,6 +118,7 @@ const Index = () => {
               >
                 <div className="flex items-center space-x-2">
                   <RadioGroupItem value="ALL" id="project-all" />
+                  <div className="w-4 h-4 rounded-full border border-gray-300"></div>
                   <Label 
                     htmlFor="project-all"
                     className="text-sm cursor-pointer font-medium"
@@ -129,6 +131,7 @@ const Index = () => {
                 
                 {projectNames.map((projectName) => {
                   const brokerName = projectBrokerMap.get(projectName);
+                  const projectColor = getProjectColor(projectName);
                   return (
                     <div key={projectName} className="flex flex-col">
                       <div className="flex items-center space-x-2">
@@ -136,6 +139,10 @@ const Index = () => {
                           value={projectName} 
                           id={`project-${projectName}`} 
                         />
+                        <div 
+                          className="w-4 h-4 rounded-full border border-gray-200" 
+                          style={{ backgroundColor: projectColor }}
+                        ></div>
                         <Label 
                           htmlFor={`project-${projectName}`}
                           className="text-sm cursor-pointer font-medium"
