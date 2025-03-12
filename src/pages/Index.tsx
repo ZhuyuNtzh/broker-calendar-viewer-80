@@ -122,30 +122,6 @@ const Index = () => {
             <div className="flex flex-col">
               <h3 className="text-lg font-medium mb-3">Properties</h3>
               
-              <div className="mb-3">
-                <div className="relative">
-                  <Input
-                    type="text"
-                    placeholder="Search properties..."
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    className="w-full"
-                    icon={<Search className="h-4 w-4" />}
-                  />
-                  {searchQuery && (
-                    <button 
-                      onClick={handleClearSearch}
-                      className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
-                    >
-                      <X className="h-4 w-4" />
-                    </button>
-                  )}
-                </div>
-                {searchQuery && filteredProjectNames.length === 0 && (
-                  <p className="text-sm text-gray-500 mt-2">No properties found</p>
-                )}
-              </div>
-              
               <RadioGroup 
                 value={selectedProject} 
                 onValueChange={setSelectedProject} 
@@ -166,6 +142,30 @@ const Index = () => {
                 </div>
                 
                 <Separator className="my-2" />
+                
+                <div className="mb-3">
+                  <div className="relative">
+                    <Input
+                      type="text"
+                      placeholder="Search properties..."
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      className="w-full"
+                      icon={<Search className="h-4 w-4" />}
+                    />
+                    {searchQuery && (
+                      <button 
+                        onClick={handleClearSearch}
+                        className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
+                      >
+                        <X className="h-4 w-4" />
+                      </button>
+                    )}
+                  </div>
+                  {searchQuery && filteredProjectNames.length === 0 && (
+                    <p className="text-sm text-gray-500 mt-2">No properties found</p>
+                  )}
+                </div>
                 
                 {filteredProjectNames.length > 0 ? (
                   filteredProjectNames.map((projectName) => {
